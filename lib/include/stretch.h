@@ -1,5 +1,5 @@
-#ifndef STRETCH_H
-#define STRETCH_H
+#ifndef LIBPSTRETCH_STRETCH_H
+#define LIBPSTRETCH_STRETCH_H
 
 #include "sample.h"
 

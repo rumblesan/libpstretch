@@ -1,5 +1,5 @@
-#ifndef SAMPLE_H
-#define SAMPLE_H
+#ifndef LIBPSTRETCH_SAMPLE_H
+#define LIBPSTRETCH_SAMPLE_H
 
 typedef struct audio_samples *Samples;
 typedef struct audio_samples {

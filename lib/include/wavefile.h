@@ -1,5 +1,5 @@
-#ifndef AUDIOFILE
-#define AUDIOFILE
+#ifndef LIBPSTRETCH_AUDIOFILE_H
+#define LIBPSTRETCH_AUDIOFILE_H
 
 #include <sndfile.h>
 #include "sample.h"

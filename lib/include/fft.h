@@ -1,5 +1,5 @@
-#ifndef FFT_H
-#define FFT_H
+#ifndef LIBPSTRETCH_FFT_H
+#define LIBPSTRETCH_FFT_H
 
 #include <fftw3.h>
 #include "sample.h"
