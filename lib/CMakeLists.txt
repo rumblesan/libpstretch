@@ -3,7 +3,6 @@ include_directories(include)
 
 set(HEADERS
   "include/fft.h"
-  "include/mp3file.h"
   "include/pstretch.h"
   "include/sample.h"
   "include/stretch.h"
@@ -12,7 +11,6 @@ set(HEADERS
 
 set(SOURCES
   "src/fft.c"
-  "src/mp3file.c"
   "src/sample.c"
   "src/stretch.c"
   "src/wavefile.c"
