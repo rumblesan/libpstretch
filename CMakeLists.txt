@@ -36,9 +36,17 @@ endforeach()
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall")
 
+include_directories(lib/include)
 
 add_subdirectory(lib)
 add_subdirectory(stretcher)
+
+option (WITH_TESTS "build tests" ON)
+
+if (WITH_TESTS)
+    enable_testing()
+    add_subdirectory(tests)
+endif()
 
 # Add all targets to the build-tree export set
 export(TARGETS pstretch
