@@ -2,6 +2,7 @@ include_directories(include)
 
 set(TEST_SOURCES
     "src/test_rawaudio.c"
+    "src/test_stretch.c"
     )
 
 foreach(TEST_FILE ${TEST_SOURCES})

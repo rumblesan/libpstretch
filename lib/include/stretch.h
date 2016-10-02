@@ -3,9 +3,7 @@
 
 #include "rawaudio.h"
 
-typedef struct StretchData *Stretch;
-
-typedef struct StretchData {
+typedef struct Stretch {
 
     int window_size;
     int channels;
@@ -18,19 +16,19 @@ typedef struct StretchData {
 
     RawAudio *old_output;
 
-} StretchData;
+} Stretch;
 
 
 //typedef RawAudio *(*stream_reader)(void *stream);
 
-Stretch stretch_create(int channels,
-                       int window_size,
-                       float ratio);
+Stretch *stretch_create(int channels,
+                        int window_size,
+                        float ratio);
 
-void stretch_add_samples(Stretch s, RawAudio *audio);
-RawAudio *stretch_window(Stretch s);
-RawAudio *stretch_output(Stretch s, RawAudio *audio);
-void stretch_cleanup(Stretch s);
+void stretch_add_samples(Stretch *s, RawAudio *audio);
+RawAudio *stretch_window(Stretch *s);
+RawAudio *stretch_output(Stretch *s, RawAudio *audio);
+void stretch_destroy(Stretch *s);
 
 #endif
 

@@ -70,9 +70,9 @@ int main (int argc, char *argv[]) {
     RawAudio *tmp_audio;
     RawAudio *fileoutput;
 
-    Stretch stretch = stretch_create(af->info.channels,
-                                     args.window_size,
-                                     args.stretch);
+    Stretch *stretch = stretch_create(af->info.channels,
+                                      args.window_size,
+                                      args.stretch);
 
     FFT fft = fft_create(args.window_size);
 
@@ -95,7 +95,7 @@ int main (int argc, char *argv[]) {
     }
 
     fft_cleanup(fft);
-    stretch_cleanup(stretch);
+    stretch_destroy(stretch);
     cleanup_audio_file(af);
     cleanup_audio_file(of);
 
