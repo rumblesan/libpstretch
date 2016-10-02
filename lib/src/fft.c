@@ -2,7 +2,7 @@
 #include <math.h>
 #include <stdlib.h>
 #include "fft.h"
-#include "sample.h"
+#include "rawaudio.h"
 
 
 FFT fft_create (int window_size) {
@@ -29,10 +29,10 @@ FFT fft_create (int window_size) {
     return f;
 }
 
-void fft_run(FFT f, Samples smps) {
+void fft_run(FFT f, RawAudio *audio) {
     int i;
-    for (i = 0; i < smps->channels; i++) {
-        f->smps = smps->buffers[i];
+    for (i = 0; i < audio->channels; i++) {
+        f->smps = audio->buffers[i];
         fft_window_data(f);
         fft_samp_to_freq(f);
         fft_pauls_algo(f);

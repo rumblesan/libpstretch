@@ -2,7 +2,7 @@
 #define LIBPSTRETCH_AUDIOFILE_H
 
 #include <sndfile.h>
-#include "sample.h"
+#include "rawaudio.h"
 
 typedef struct audio_file *AudioFile;
 
@@ -18,8 +18,8 @@ AudioFile write_audio_file(char *filename,
                            int samplerate,
                            int channels,
                            int format);
-Samples get_audio_data(AudioFile af, int size);
-void write_audio_data(AudioFile af, Samples smps);
+RawAudio *get_audio_data(AudioFile af, int size);
+void write_audio_data(AudioFile af, RawAudio *audio);
 void cleanup_audio_file(AudioFile af);
 
 #endif

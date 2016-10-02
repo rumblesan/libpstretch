@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <sndfile.h>
 #include "wavefile.h"
-#include "sample.h"
+#include "rawaudio.h"
 
 
 AudioFile read_audio_file(char *filename) {
@@ -34,7 +34,7 @@ AudioFile write_audio_file(char *filename,
     return af;
 }
 
-Samples get_audio_data(AudioFile af, int size) {
+RawAudio *get_audio_data(AudioFile af, int size) {
 
     int channels = af->info.channels;
     int i,j;
@@ -52,34 +52,34 @@ Samples get_audio_data(AudioFile af, int size) {
         }
     }
 
-    Samples smps = sbuffer_create(channels, size);
+    RawAudio *audio = raw_audio_create(channels, size);
     for (i = 0; i < channels; i++) {
         for (j = 0; j < size; j++) {
             pos = (j * channels) + i;
-            smps->buffers[i][j] = iobuffer[pos];
+            audio->buffers[i][j] = iobuffer[pos];
         }
     }
 
-    return smps;
+    return audio;
 
 }
 
-void write_audio_data(AudioFile af, Samples smps) {
+void write_audio_data(AudioFile af, RawAudio *audio) {
 
     int i,j;
     int pos;
-    int buffer_size = smps->channels * smps->size;
+    int buffer_size = audio->channels * audio->size;
     float iobuffer[buffer_size];
-    for (i = 0; i < smps->channels; i++) {
-        for (j = 0; j < smps->size; j++) {
-            pos = (j * smps->channels) + i;
-            iobuffer[pos] = smps->buffers[i][j];
+    for (i = 0; i < audio->channels; i++) {
+        for (j = 0; j < audio->size; j++) {
+            pos = (j * audio->channels) + i;
+            iobuffer[pos] = audio->buffers[i][j];
         }
     }
 
-    sf_writef_float(af->sf, iobuffer, smps->size);
+    sf_writef_float(af->sf, iobuffer, audio->size);
 
-    sbuffer_cleanup(smps);
+    raw_audio_destroy(audio);
 }
 
 void cleanup_audio_file(AudioFile af) {

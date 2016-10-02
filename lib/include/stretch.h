@@ -1,12 +1,11 @@
 #ifndef LIBPSTRETCH_STRETCH_H
 #define LIBPSTRETCH_STRETCH_H
 
-#include "sample.h"
+#include "rawaudio.h"
 
+typedef struct StretchData *Stretch;
 
-typedef struct stretch_data *Stretch;
-
-typedef struct stretch_data {
+typedef struct StretchData {
 
     int window_size;
     int channels;
@@ -15,19 +14,22 @@ typedef struct stretch_data {
     int need_more_audio;
     float input_offset;
 
-    Samples input;
+    RawAudio *input;
 
-    Samples old_output;
+    RawAudio *old_output;
 
-} Stretch_Data;
+} StretchData;
+
+
+//typedef RawAudio *(*stream_reader)(void *stream);
 
 Stretch stretch_create(int channels,
                        int window_size,
                        float ratio);
 
-void stretch_add_samples(Stretch s, Samples smps);
-Samples stretch_window(Stretch s);
-Samples stretch_output(Stretch s, Samples smps);
+void stretch_add_samples(Stretch s, RawAudio *audio);
+RawAudio *stretch_window(Stretch s);
+RawAudio *stretch_output(Stretch s, RawAudio *audio);
 void stretch_cleanup(Stretch s);
 
 #endif

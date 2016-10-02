@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include "wavstretch.h"
-#include "pstretch/pstretch.h"
+#include "pstretch.h"
 
 void usage(int exitval) {
     printf("Wave Stretch usage:\n");
@@ -67,8 +67,8 @@ int main (int argc, char *argv[]) {
                                     af->info.samplerate,
                                     af->info.channels,
                                     af->info.format);
-    Samples tmp_smps;
-    Samples fileoutput;
+    RawAudio *tmp_audio;
+    RawAudio *fileoutput;
 
     Stretch stretch = stretch_create(af->info.channels,
                                      args.window_size,
@@ -79,17 +79,17 @@ int main (int argc, char *argv[]) {
     /*
         need to load in data for the stretch
     */
-    tmp_smps = get_audio_data(af, stretch->window_size);
-    stretch_add_samples(stretch, tmp_smps);
+    tmp_audio = get_audio_data(af, stretch->window_size);
+    stretch_add_samples(stretch, tmp_audio);
 
     while ((af->finished != 1) || (stretch->need_more_audio != 1)) {
         if (stretch->need_more_audio) {
-            tmp_smps = get_audio_data(af, stretch->window_size);
-            stretch_add_samples(stretch, tmp_smps);
+            tmp_audio = get_audio_data(af, stretch->window_size);
+            stretch_add_samples(stretch, tmp_audio);
         }
-        tmp_smps = stretch_window(stretch);
-        fft_run(fft, tmp_smps);
-        fileoutput = stretch_output(stretch, tmp_smps);
+        tmp_audio = stretch_window(stretch);
+        fft_run(fft, tmp_audio);
+        fileoutput = stretch_output(stretch, tmp_audio);
 
         write_audio_data(of, fileoutput);
     }
@@ -101,5 +101,3 @@ int main (int argc, char *argv[]) {
 
     return 0;
 }
-
-
