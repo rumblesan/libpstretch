@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include "wavstretch.h"
+#include "wavefile.h"
 #include "pstretch.h"
 
 void usage(int exitval) {

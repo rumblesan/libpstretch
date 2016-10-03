@@ -6,14 +6,12 @@ set(HEADERS
   "include/pstretch.h"
   "include/rawaudio.h"
   "include/stretch.h"
-  "include/wavefile.h"
   )
 
 set(SOURCES
   "src/fft.c"
   "src/rawaudio.c"
   "src/stretch.c"
-  "src/wavefile.c"
   )
 
 add_library(pstretch STATIC ${SOURCES})

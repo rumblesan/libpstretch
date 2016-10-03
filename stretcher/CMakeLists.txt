@@ -1,5 +1,7 @@
 
-set(SOURCES "wavstretch.c")
+include_directories(include)
+
+set(SOURCES "src/wavefile.c" "wavstretch.c")
 
 add_executable(stretcher ${SOURCES})
 set_property(TARGET stretcher PROPERTY C_STANDARD 99)

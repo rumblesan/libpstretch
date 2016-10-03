@@ -4,6 +4,5 @@
 #include "fft.h"
 #include "rawaudio.h"
 #include "stretch.h"
-#include "wavefile.h"
 
 #endif
