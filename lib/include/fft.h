@@ -4,9 +4,7 @@
 #include <fftw3.h>
 #include "rawaudio.h"
 
-typedef struct fft_data *FFT;
-
-typedef struct fft_data {
+typedef struct FFT {
 
     int window_size;
     int rand_seed;
@@ -19,15 +17,15 @@ typedef struct fft_data {
 
     fftwf_plan forward, inverse;
 
-} FFT_Data;
+} FFT;
 
-FFT fft_create (int window_size);
-void fft_run(FFT f, RawAudio *audio);
-void fft_window_data(FFT f);
-void fft_normalise_data(FFT f);
-void fft_samp_to_freq(FFT f);
-void fft_pauls_algo(FFT f);
-void fft_freq_to_samp(FFT f);
-void fft_cleanup(FFT f);
+FFT *fft_create (int window_size);
+void fft_run(FFT *fft, RawAudio *audio);
+void fft_window_data(FFT *fft);
+void fft_normalise_data(FFT *fft);
+void fft_samp_to_freq(FFT *fft);
+void fft_pauls_algo(FFT *fft);
+void fft_freq_to_samp(FFT *fft);
+void fft_cleanup(FFT *fft);
 
 #endif

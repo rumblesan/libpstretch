@@ -86,7 +86,7 @@ int main (int argc, char *argv[]) {
                                       af
                                       );
 
-    FFT fft = fft_create(args.window_size);
+    FFT *fft = fft_create(args.window_size);
 
     /*
         need to load in data for the stretch
