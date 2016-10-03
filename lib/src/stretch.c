@@ -70,6 +70,7 @@ void stretch_add_samples(Stretch *s, RawAudio *audio) {
   s->need_more_audio = 0;
 
   raw_audio_destroy(audio);
+  return;
  error:
   debug("Error adding samples to stretch");
 }
@@ -127,6 +128,7 @@ void stretch_destroy(Stretch *s) {
   raw_audio_destroy(s->old_output);
 
   free(s);
+  return;
  error:
   debug("Error cleaning up stretch");
 }
