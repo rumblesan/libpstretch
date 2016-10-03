@@ -9,7 +9,10 @@
 
 Stretch *stretch_create(int channels,
                         int window_size,
-                        float stretch) {
+                        float stretch,
+                        stream_reader reader,
+                        void *stream
+                        ) {
 
   Stretch *s      = malloc(sizeof(Stretch));
   check_mem(s);
@@ -17,6 +20,8 @@ Stretch *stretch_create(int channels,
   s->channels     = channels;
   s->speed        = 1.0/stretch;
 
+  s->reader = reader;
+  s->stream = stream;
   s->need_more_audio = 1;
   s->input_offset    = 0.0;
   /*
@@ -36,7 +41,7 @@ Stretch *stretch_create(int channels,
   }
 
   return s;
-error:
+ error:
   return NULL;
 }
 
@@ -65,7 +70,7 @@ void stretch_add_samples(Stretch *s, RawAudio *audio) {
   s->need_more_audio = 0;
 
   raw_audio_destroy(audio);
-error:
+ error:
   debug("Error adding samples to stretch");
 }
 
@@ -90,7 +95,7 @@ RawAudio *stretch_window(Stretch *s) {
   }
 
   return audio;
-error:
+ error:
   return NULL;
 }
 
@@ -111,7 +116,7 @@ RawAudio *stretch_output(Stretch *s, RawAudio *audio) {
   raw_audio_destroy(s->old_output);
   s->old_output = audio;
   return output;
-error:
+ error:
   return NULL;
 }
 
@@ -122,7 +127,7 @@ void stretch_destroy(Stretch *s) {
   raw_audio_destroy(s->old_output);
 
   free(s);
-error:
+ error:
   debug("Error cleaning up stretch");
 }
 

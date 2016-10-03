@@ -58,6 +58,13 @@ Args parse_args(int argc, char *argv[]) {
     return args;
 }
 
+RawAudio *audio_file_stream_reader(void *stream) {
+  AudioFile *af = stream;
+  printf("Called stream reader\n");
+  return NULL;
+}
+
+
 int main (int argc, char *argv[]) {
 
     Args args = parse_args(argc, argv);
@@ -72,7 +79,10 @@ int main (int argc, char *argv[]) {
 
     Stretch *stretch = stretch_create(af->info.channels,
                                       args.window_size,
-                                      args.stretch);
+                                      args.stretch,
+                                      &audio_file_stream_reader,
+                                      af
+                                      );
 
     FFT fft = fft_create(args.window_size);
 
