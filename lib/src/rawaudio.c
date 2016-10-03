@@ -32,6 +32,7 @@ void raw_audio_destroy(RawAudio *audio) {
   }
   free(audio->buffers);
   free(audio);
+  return;
 error:
   debug("Error cleaning up audio");
 }
