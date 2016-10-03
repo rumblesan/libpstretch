@@ -3,7 +3,9 @@
 
 #include "rawaudio.h"
 
-typedef RawAudio *(*stream_reader)(void *stream);
+struct Stretch;
+
+typedef RawAudio *(*stream_reader)(struct Stretch *s, void *stream);
 
 typedef struct Stretch {
 

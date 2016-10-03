@@ -3,7 +3,7 @@
 #include "stretch.h"
 #include "rawaudio.h"
 
-RawAudio *audio_file_stream_reader(void *stream) {
+RawAudio *audio_file_stream_reader(Stretch *s, void *stream) {
   printf("Called stream reader\n");
   return NULL;
 }

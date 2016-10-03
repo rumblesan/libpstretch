@@ -59,10 +59,11 @@ Args parse_args(int argc, char *argv[]) {
     return args;
 }
 
-RawAudio *audio_file_stream_reader(void *stream) {
-  AudioFile *af = stream;
+RawAudio *audio_file_stream_reader(Stretch *s, void *stream) {
+  AudioFile af = stream;
   printf("Called stream reader\n");
-  return NULL;
+  RawAudio *tmp_audio = get_audio_data(af, s->window_size);
+  return tmp_audio;
 }
 
 
