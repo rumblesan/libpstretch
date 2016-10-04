@@ -1,9 +1,10 @@
 #include "minunit.h"
 
 #include "stretch.h"
+#include "audiostream.h"
 #include "rawaudio.h"
 
-RawAudio *audio_file_stream_reader(Stretch *s, void *stream) {
+RawAudio *audio_file_stream_reader(Stretch *s, AudioStream *stream) {
   printf("Called stream reader\n");
   return NULL;
 }

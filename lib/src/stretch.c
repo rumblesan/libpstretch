@@ -11,7 +11,7 @@ Stretch *stretch_create(int channels,
                         int window_size,
                         float stretch,
                         stream_reader reader,
-                        void *stream
+                        AudioStream *stream
                         ) {
 
   Stretch *s      = malloc(sizeof(Stretch));
@@ -22,7 +22,10 @@ Stretch *stretch_create(int channels,
 
   s->reader = reader;
   s->stream = stream;
+  s->stream_finished = 0;
+
   s->need_more_audio = 1;
+  s->finished = 0;
   s->input_offset    = 0.0;
   /*
     create buffers
@@ -45,7 +48,7 @@ Stretch *stretch_create(int channels,
   return NULL;
 }
 
-void stretch_add_samples(Stretch *s, RawAudio *audio) {
+void stretch_add_samples(Stretch *s) {
 
   RawAudio *tmp_samples;
   int i,j;
@@ -53,6 +56,12 @@ void stretch_add_samples(Stretch *s, RawAudio *audio) {
   int size   = s->input->size;
   int rem    = size - offset;
 
+  if (s->stream->finished) return;
+  RawAudio *audio = s->reader(s, s->stream);
+  if (s->stream->finished) {
+    log_info("Stream is finished");
+    s->stream_finished = 1;
+  }
   tmp_samples = raw_audio_create(s->channels, rem+audio->size);
   check(tmp_samples, "Could not create temporary audio buffer");
   for (i = 0; i < s->channels; i++) {
@@ -93,6 +102,11 @@ RawAudio *stretch_window(Stretch *s) {
 
   if (floor(s->input_offset)+offset_inc >= s->window_size) {
     s->need_more_audio = 1;
+    log_info("Need more audio");
+    if (s->stream_finished) {
+      log_info("Stream also finished");
+      s->finished = 1;
+    }
   }
 
   return audio;

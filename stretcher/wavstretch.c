@@ -59,10 +59,13 @@ Args parse_args(int argc, char *argv[]) {
     return args;
 }
 
-RawAudio *audio_file_stream_reader(Stretch *s, void *stream) {
-  AudioFile af = stream;
+RawAudio *audio_file_stream_reader(Stretch *s, AudioStream *stream) {
+  AudioFile af = stream->source;
   printf("Called stream reader\n");
   RawAudio *tmp_audio = get_audio_data(af, s->window_size);
+  if (af->finished) {
+    stream->finished = 1;
+  }
   return tmp_audio;
 }
 
@@ -79,19 +82,20 @@ int main (int argc, char *argv[]) {
     RawAudio *tmp_audio;
     RawAudio *fileoutput;
 
+    AudioStream *stream = audio_stream_create(af);
+
     Stretch *stretch = stretch_create(af->info.channels,
                                       args.window_size,
                                       args.stretch,
                                       &audio_file_stream_reader,
-                                      af
+                                      stream
                                       );
 
     FFT *fft = fft_create(args.window_size);
 
-    while ((af->finished == 0) || (stretch->need_more_audio == 0)) {
+    while (!stretch->finished) {
         if (stretch->need_more_audio) {
-            tmp_audio = get_audio_data(af, stretch->window_size);
-            stretch_add_samples(stretch, tmp_audio);
+            stretch_add_samples(stretch);
         }
         tmp_audio = stretch_window(stretch);
         fft_run(fft, tmp_audio);

@@ -36,6 +36,8 @@ AudioFile write_audio_file(char *filename,
 
 RawAudio *get_audio_data(AudioFile af, int size) {
 
+    if (af->finished) return NULL;
+
     int channels = af->info.channels;
     int i,j;
 
