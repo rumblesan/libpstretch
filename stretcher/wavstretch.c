@@ -59,9 +59,9 @@ Args parse_args(int argc, char *argv[]) {
     return args;
 }
 
-RawAudio *audio_file_stream_reader(Stretch *s, AudioStream *stream) {
+RawAudio *audio_file_stream_reader(AudioStream *stream, int sample_count) {
   AudioFile af = stream->source;
-  RawAudio *tmp_audio = get_audio_data(af, s->window_size);
+  RawAudio *tmp_audio = get_audio_data(af, sample_count);
   if (af->finished) {
     stream->finished = 1;
   }

@@ -4,7 +4,7 @@
 #include "audiostream.h"
 #include "rawaudio.h"
 
-RawAudio *audio_file_stream_reader(Stretch *s, AudioStream *stream) {
+RawAudio *audio_file_stream_reader(AudioStream *stream, int sample_count) {
   printf("Called stream reader\n");
   return NULL;
 }

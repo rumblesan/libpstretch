@@ -3,8 +3,6 @@
 
 #include "rawaudio.h"
 
-struct Stretch;
-
 typedef struct AudioStream {
 
   int finished;
@@ -13,7 +11,7 @@ typedef struct AudioStream {
 
 } AudioStream;
   
-typedef RawAudio *(*stream_reader)(struct Stretch *s, AudioStream *stream);
+typedef RawAudio *(*stream_reader)(AudioStream *stream, int sample_count);
 
 AudioStream *audio_stream_create(void *source);
 

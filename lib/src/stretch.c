@@ -70,7 +70,7 @@ void stretch_add_samples(Stretch *s) {
   int rem    = size - offset;
 
   if (s->stream->finished) return;
-  RawAudio *audio = s->reader(s, s->stream);
+  RawAudio *audio = s->reader(s->stream, s->window_size);
   if (s->stream->finished) {
     log_info("Stream is finished");
     s->stream_finished = 1;
