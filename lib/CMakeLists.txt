@@ -2,6 +2,7 @@
 include_directories(include)
 
 set(HEADERS
+  "include/audiostream.h"
   "include/fft.h"
   "include/pstretch.h"
   "include/rawaudio.h"
@@ -9,6 +10,7 @@ set(HEADERS
   )
 
 set(SOURCES
+  "src/audiostream.c"
   "src/fft.c"
   "src/rawaudio.c"
   "src/stretch.c"
