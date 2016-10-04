@@ -88,13 +88,7 @@ int main (int argc, char *argv[]) {
 
     FFT *fft = fft_create(args.window_size);
 
-    /*
-        need to load in data for the stretch
-    */
-    tmp_audio = get_audio_data(af, stretch->window_size);
-    stretch_add_samples(stretch, tmp_audio);
-
-    while ((af->finished != 1) || (stretch->need_more_audio != 1)) {
+    while ((af->finished == 0) || (stretch->need_more_audio == 0)) {
         if (stretch->need_more_audio) {
             tmp_audio = get_audio_data(af, stretch->window_size);
             stretch_add_samples(stretch, tmp_audio);
