@@ -39,7 +39,7 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall")
 include_directories(lib/include)
 
 add_subdirectory(lib)
-add_subdirectory(stretcher)
+add_subdirectory(main)
 
 option (WITH_TESTS "build tests" ON)
 
