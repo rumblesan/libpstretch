@@ -3,6 +3,7 @@
 #include <math.h>
 #include "stretch.h"
 #include "rawaudio.h"
+#include "fft.h"
 
 #include "bclib/dbg.h"
 
@@ -19,6 +20,9 @@ Stretch *stretch_create(int channels,
   s->window_size  = window_size;
   s->channels     = channels;
   s->speed        = 1.0/stretch;
+
+  s->fft          = fft_create(window_size);
+  check(s->fft, "Could not create FFT");
 
   s->reader = reader;
   s->stream = stream;
@@ -46,6 +50,15 @@ Stretch *stretch_create(int channels,
   return s;
  error:
   return NULL;
+}
+
+RawAudio *stretch_run(Stretch *stretch) {
+  if (stretch->need_more_audio) {
+    stretch_add_samples(stretch);
+  }
+  RawAudio *tmp_audio = stretch_window(stretch);
+  fft_run(stretch->fft, tmp_audio);
+  return stretch_output(stretch, tmp_audio);
 }
 
 void stretch_add_samples(Stretch *s) {
@@ -138,6 +151,7 @@ RawAudio *stretch_output(Stretch *s, RawAudio *audio) {
 void stretch_destroy(Stretch *s) {
 
   check(s, "Must provide valid stretch structure");
+  fft_cleanup(s->fft);
   raw_audio_destroy(s->input);
   raw_audio_destroy(s->old_output);
 

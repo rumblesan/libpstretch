@@ -79,7 +79,6 @@ int main (int argc, char *argv[]) {
                                     af->info.samplerate,
                                     af->info.channels,
                                     af->info.format);
-    RawAudio *tmp_audio;
     RawAudio *fileoutput;
 
     AudioStream *stream = audio_stream_create(af);
@@ -91,20 +90,11 @@ int main (int argc, char *argv[]) {
                                       stream
                                       );
 
-    FFT *fft = fft_create(args.window_size);
-
     while (!stretch->finished) {
-        if (stretch->need_more_audio) {
-            stretch_add_samples(stretch);
-        }
-        tmp_audio = stretch_window(stretch);
-        fft_run(fft, tmp_audio);
-        fileoutput = stretch_output(stretch, tmp_audio);
-
-        write_audio_data(of, fileoutput);
+      fileoutput = stretch_run(stretch);
+      write_audio_data(of, fileoutput);
     }
 
-    fft_cleanup(fft);
     stretch_destroy(stretch);
     cleanup_audio_file(af);
     cleanup_audio_file(of);

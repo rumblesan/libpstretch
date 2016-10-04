@@ -3,6 +3,7 @@
 
 #include "rawaudio.h"
 #include "audiostream.h"
+#include "fft.h"
 
 typedef struct Stretch {
 
@@ -13,6 +14,8 @@ typedef struct Stretch {
   int finished;
   int need_more_audio;
   float input_offset;
+
+  FFT *fft;
 
   stream_reader reader;
   AudioStream *stream;
@@ -32,6 +35,7 @@ Stretch *stretch_create(int channels,
                         AudioStream *stream
                         );
 
+RawAudio *stretch_run(Stretch *stretch);
 void stretch_add_samples(Stretch *s);
 RawAudio *stretch_window(Stretch *s);
 RawAudio *stretch_output(Stretch *s, RawAudio *audio);
