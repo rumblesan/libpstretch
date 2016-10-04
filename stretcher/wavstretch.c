@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include "wavstretch.h"
-#include "wavefile.h"
+#include "audiofile.h"
 #include "pstretch.h"
 
 void usage(int exitval) {
@@ -60,7 +60,7 @@ Args parse_args(int argc, char *argv[]) {
 }
 
 RawAudio *audio_file_stream_reader(AudioStream *stream, int sample_count) {
-  AudioFile af = stream->source;
+  AudioFile *af = stream->source;
   RawAudio *tmp_audio = get_audio_data(af, sample_count);
   if (af->finished) {
     stream->finished = 1;
@@ -73,11 +73,11 @@ int main (int argc, char *argv[]) {
 
     Args args = parse_args(argc, argv);
 
-    AudioFile af = read_audio_file(args.input_file);
-    AudioFile of = write_audio_file(args.output_file,
-                                    af->info.samplerate,
-                                    af->info.channels,
-                                    af->info.format);
+    AudioFile *af = read_audio_file(args.input_file);
+    AudioFile *of = write_audio_file(args.output_file,
+                                     af->info.samplerate,
+                                     af->info.channels,
+                                     af->info.format);
     AudioStream *stream = audio_stream_create(af);
 
     Stretch *stretch = stretch_create(af->info.channels,

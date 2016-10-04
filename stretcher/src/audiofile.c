@@ -1,12 +1,12 @@
 #include <stdlib.h>
 #include <sndfile.h>
-#include "wavefile.h"
+#include "audiofile.h"
 #include "pstretch.h"
 
 
-AudioFile read_audio_file(char *filename) {
+AudioFile *read_audio_file(char *filename) {
 
-    AudioFile af = (AudioFile) malloc(sizeof(AudioFile_Data));
+    AudioFile *af = malloc(sizeof(AudioFile));
 
     af->filename = filename;
     af->finished = 0;
@@ -17,12 +17,12 @@ AudioFile read_audio_file(char *filename) {
     return af;
 }
 
-AudioFile write_audio_file(char *filename,
-                           int samplerate,
-                           int channels,
-                           int format) {
+AudioFile *write_audio_file(char *filename,
+                            int samplerate,
+                            int channels,
+                            int format) {
 
-    AudioFile af = (AudioFile) malloc(sizeof(AudioFile_Data));
+    AudioFile *af = malloc(sizeof(AudioFile));
 
     af->filename = filename;
 
@@ -34,7 +34,7 @@ AudioFile write_audio_file(char *filename,
     return af;
 }
 
-RawAudio *get_audio_data(AudioFile af, int size) {
+RawAudio *get_audio_data(AudioFile *af, int size) {
 
     if (af->finished) return NULL;
 
@@ -66,7 +66,7 @@ RawAudio *get_audio_data(AudioFile af, int size) {
 
 }
 
-void write_audio_data(AudioFile af, RawAudio *audio) {
+void write_audio_data(AudioFile *af, RawAudio *audio) {
 
     int i,j;
     int pos;
@@ -84,7 +84,7 @@ void write_audio_data(AudioFile af, RawAudio *audio) {
     raw_audio_destroy(audio);
 }
 
-void cleanup_audio_file(AudioFile af) {
+void cleanup_audio_file(AudioFile *af) {
     sf_close(af->sf);
     free(af);
 }
