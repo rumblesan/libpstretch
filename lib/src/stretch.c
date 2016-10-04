@@ -52,6 +52,12 @@ Stretch *stretch_create(int channels,
   return NULL;
 }
 
+/* Run actual stretching algorithm
+ *
+ * Get audio from stream when necessary
+ * Select window of audio to stretch
+ * Process audio through FFT
+ */
 RawAudio *stretch_run(Stretch *stretch) {
   if (stretch->need_more_audio) {
     stretch_add_samples(stretch);
@@ -61,6 +67,9 @@ RawAudio *stretch_run(Stretch *stretch) {
   return stretch_output(stretch, tmp_audio);
 }
 
+/* Retrieve required number of samples from audio input stream
+ * add it to the input buffer of the stretch struct
+ */
 void stretch_add_samples(Stretch *s) {
 
   RawAudio *tmp_samples;
@@ -97,6 +106,9 @@ void stretch_add_samples(Stretch *s) {
   debug("Error adding samples to stretch");
 }
 
+/* Get the next section of audio to be stretched
+ * The starting offset is incremented small amounts each time
+ */
 RawAudio *stretch_window(Stretch *s) {
 
   int i, j;
@@ -104,6 +116,7 @@ RawAudio *stretch_window(Stretch *s) {
 
   RawAudio *audio = raw_audio_create(s->channels, s->window_size);
   check(audio, "Could not create stretch window audio");
+
   for (i = 0; i < s->channels; i++) {
     for (j = 0; j < s->window_size; j++) {
       audio->buffers[i][j] = s->input->buffers[i][j+offset];
@@ -127,13 +140,19 @@ RawAudio *stretch_window(Stretch *s) {
   return NULL;
 }
 
+/* Combine the first half of newly stretch audio with last half of
+ * previous stretch. Done to overlap windows correctly.
+ * Save last half of newly stretched audio and return combined buffer
+ */
 RawAudio *stretch_output(Stretch *s, RawAudio *audio) {
 
   int i,j;
   float data;
   int halfwindow = s->window_size/2;
+
   RawAudio *output = raw_audio_create(s->channels, halfwindow);
   check(output, "Could not create stretch output audio");
+
   for (i = 0; i < s->channels;i++) {
     for (j = 0; j < halfwindow;j++) {
       data  = s->old_output->buffers[i][j+halfwindow];

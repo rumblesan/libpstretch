@@ -48,6 +48,12 @@ FFT *fft_create (int window_size) {
   return NULL;
 }
 
+/* Window the incoming audio data.
+ * Convert it to frequency bins.
+ * Randomise the phase data.
+ * Convert back to audio.
+ * Normalise and window.
+ */
 void fft_run(FFT *fft, RawAudio *audio) {
   check(fft, "Need to pass valid fft");
   check(audio, "Need to pass valid audio");
