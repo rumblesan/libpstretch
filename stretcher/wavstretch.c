@@ -61,7 +61,6 @@ Args parse_args(int argc, char *argv[]) {
 
 RawAudio *audio_file_stream_reader(Stretch *s, AudioStream *stream) {
   AudioFile af = stream->source;
-  printf("Called stream reader\n");
   RawAudio *tmp_audio = get_audio_data(af, s->window_size);
   if (af->finished) {
     stream->finished = 1;
@@ -79,8 +78,6 @@ int main (int argc, char *argv[]) {
                                     af->info.samplerate,
                                     af->info.channels,
                                     af->info.format);
-    RawAudio *fileoutput;
-
     AudioStream *stream = audio_stream_create(af);
 
     Stretch *stretch = stretch_create(af->info.channels,
@@ -91,8 +88,7 @@ int main (int argc, char *argv[]) {
                                       );
 
     while (!stretch->finished) {
-      fileoutput = stretch_run(stretch);
-      write_audio_data(of, fileoutput);
+      write_audio_data(of, stretch_run(stretch));
     }
 
     stretch_destroy(stretch);
