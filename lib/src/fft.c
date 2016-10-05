@@ -127,8 +127,8 @@ void fft_pauls_algo(FFT *fft) {
     fft->rand_seed = (fft->rand_seed * 1103515245+12345);
     rand=(fft->rand_seed>>16)&0x7fff;
     phase = rand * inv_2p15_2pi;
-    fft->data[i] = fft->freq[i]*sin(phase);
-    fft->data[fft->window_size-i] = fft->freq[i]*cos(phase);
+    fft->data[i] = fft->freq[i]*cos(phase);
+    fft->data[fft->window_size-i] = fft->freq[i]*sin(phase);
   }
 
   fft->data[0] = 0.0;
