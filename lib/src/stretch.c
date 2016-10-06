@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <math.h>
 #include "stretch.h"
-#include "rawaudio.h"
+#include "audiobuffer.h"
 #include "fft.h"
 
 #include "bclib/dbg.h"
@@ -34,9 +34,9 @@ Stretch *stretch_create(int channels,
   /*
     create buffers
   */
-  s->input      = raw_audio_create(s->channels, s->window_size);
+  s->input      = audio_buffer_create(s->channels, s->window_size);
   check(s->input, "Could not create input audio buffer");
-  s->old_output = raw_audio_create(s->channels, s->window_size);
+  s->old_output = audio_buffer_create(s->channels, s->window_size);
   check(s->old_output, "Could not create old_output audio buffer");
   int i,j;
 
@@ -58,11 +58,11 @@ Stretch *stretch_create(int channels,
  * Select window of audio to stretch
  * Process audio through FFT
  */
-RawAudio *stretch_run(Stretch *stretch) {
+AudioBuffer *stretch_run(Stretch *stretch) {
   if (stretch->need_more_audio) {
     stretch_add_samples(stretch);
   }
-  RawAudio *tmp_audio = stretch_window(stretch);
+  AudioBuffer *tmp_audio = stretch_window(stretch);
   fft_run(stretch->fft, tmp_audio);
   return stretch_output(stretch, tmp_audio);
 }
@@ -72,19 +72,19 @@ RawAudio *stretch_run(Stretch *stretch) {
  */
 void stretch_add_samples(Stretch *s) {
 
-  RawAudio *tmp_samples;
+  AudioBuffer *tmp_samples;
   int i,j;
   int offset = (int) floor(s->input_offset);
   int size   = s->input->size;
   int rem    = size - offset;
 
   if (s->stream->finished) return;
-  RawAudio *audio = s->reader(s->stream, s->window_size);
+  AudioBuffer *audio = s->reader(s->stream, s->window_size);
   if (s->stream->finished) {
     log_info("Stream is finished");
     s->stream_finished = 1;
   }
-  tmp_samples = raw_audio_create(s->channels, rem+audio->size);
+  tmp_samples = audio_buffer_create(s->channels, rem+audio->size);
   check(tmp_samples, "Could not create temporary audio buffer");
   for (i = 0; i < s->channels; i++) {
     for (j = 0; j < rem; j++) {
@@ -95,12 +95,12 @@ void stretch_add_samples(Stretch *s) {
     }
   }
 
-  raw_audio_destroy(s->input);
+  audio_buffer_destroy(s->input);
   s->input           = tmp_samples;
   s->input_offset   -= floor(s->input_offset);
   s->need_more_audio = 0;
 
-  raw_audio_destroy(audio);
+  audio_buffer_destroy(audio);
   return;
  error:
   debug("Error adding samples to stretch");
@@ -109,12 +109,12 @@ void stretch_add_samples(Stretch *s) {
 /* Get the next section of audio to be stretched
  * The starting offset is incremented small amounts each time
  */
-RawAudio *stretch_window(Stretch *s) {
+AudioBuffer *stretch_window(Stretch *s) {
 
   int i, j;
   int offset = (int) floor(s->input_offset);
 
-  RawAudio *audio = raw_audio_create(s->channels, s->window_size);
+  AudioBuffer *audio = audio_buffer_create(s->channels, s->window_size);
   check(audio, "Could not create stretch window audio");
 
   for (i = 0; i < s->channels; i++) {
@@ -144,13 +144,13 @@ RawAudio *stretch_window(Stretch *s) {
  * previous stretch. Done to overlap windows correctly.
  * Save last half of newly stretched audio and return combined buffer
  */
-RawAudio *stretch_output(Stretch *s, RawAudio *audio) {
+AudioBuffer *stretch_output(Stretch *s, AudioBuffer *audio) {
 
   int i,j;
   float data;
   int halfwindow = s->window_size/2;
 
-  RawAudio *output = raw_audio_create(s->channels, halfwindow);
+  AudioBuffer *output = audio_buffer_create(s->channels, halfwindow);
   check(output, "Could not create stretch output audio");
 
   for (i = 0; i < s->channels;i++) {
@@ -160,7 +160,7 @@ RawAudio *stretch_output(Stretch *s, RawAudio *audio) {
       output->buffers[i][j] = data;
     }
   }
-  raw_audio_destroy(s->old_output);
+  audio_buffer_destroy(s->old_output);
   s->old_output = audio;
   return output;
  error:
@@ -171,8 +171,8 @@ void stretch_destroy(Stretch *s) {
 
   check(s, "Must provide valid stretch structure");
   fft_cleanup(s->fft);
-  raw_audio_destroy(s->input);
-  raw_audio_destroy(s->old_output);
+  audio_buffer_destroy(s->input);
+  audio_buffer_destroy(s->old_output);
 
   free(s);
   return;

@@ -1,7 +1,7 @@
 #ifndef LIBPSTRETCH_STRETCH_H
 #define LIBPSTRETCH_STRETCH_H
 
-#include "rawaudio.h"
+#include "audiobuffer.h"
 #include "audiostream.h"
 #include "fft.h"
 
@@ -21,9 +21,9 @@ typedef struct Stretch {
   AudioStream *stream;
   int stream_finished;
 
-  RawAudio *input;
+  AudioBuffer *input;
 
-  RawAudio *old_output;
+  AudioBuffer *old_output;
 
 } Stretch;
 
@@ -35,10 +35,10 @@ Stretch *stretch_create(int channels,
                         AudioStream *stream
                         );
 
-RawAudio *stretch_run(Stretch *stretch);
+AudioBuffer *stretch_run(Stretch *stretch);
 void stretch_add_samples(Stretch *s);
-RawAudio *stretch_window(Stretch *s);
-RawAudio *stretch_output(Stretch *s, RawAudio *audio);
+AudioBuffer *stretch_window(Stretch *s);
+AudioBuffer *stretch_output(Stretch *s, AudioBuffer *audio);
 void stretch_destroy(Stretch *s);
 
 #endif

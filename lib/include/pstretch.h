@@ -2,7 +2,7 @@
 #define LIBPSTRETCH_LIBPSTRETCH_H
 
 #include "fft.h"
-#include "rawaudio.h"
+#include "audiobuffer.h"
 #include "stretch.h"
 #include "audiostream.h"
 

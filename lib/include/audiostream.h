@@ -1,7 +1,7 @@
 #ifndef LIBPSTRETCH_AUDIOSTREAM_H
 #define LIBPSTRETCH_AUDIOSTREAM_H
 
-#include "rawaudio.h"
+#include "audiobuffer.h"
 
 typedef struct AudioStream {
 
@@ -11,7 +11,7 @@ typedef struct AudioStream {
 
 } AudioStream;
   
-typedef RawAudio *(*stream_reader)(AudioStream *stream, int sample_count);
+typedef AudioBuffer *(*stream_reader)(AudioStream *stream, int sample_count);
 
 AudioStream *audio_stream_create(void *source);
 

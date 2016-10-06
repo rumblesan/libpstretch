@@ -2,7 +2,7 @@
 #include <math.h>
 #include <stdlib.h>
 #include "fft.h"
-#include "rawaudio.h"
+#include "audiobuffer.h"
 
 #include "bclib/dbg.h"
 
@@ -54,7 +54,7 @@ FFT *fft_create (int window_size) {
  * Convert back to audio.
  * Normalise and window.
  */
-void fft_run(FFT *fft, RawAudio *audio) {
+void fft_run(FFT *fft, AudioBuffer *audio) {
   check(fft, "Need to pass valid fft");
   check(audio, "Need to pass valid audio");
   int i;

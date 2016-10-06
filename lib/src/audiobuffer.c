@@ -1,10 +1,10 @@
 #include <stdlib.h>
-#include "rawaudio.h"
+#include "audiobuffer.h"
 
 #include "bclib/dbg.h"
 
-RawAudio *raw_audio_create(int channels, int size) {
-  RawAudio *audio = malloc(sizeof(RawAudio));
+AudioBuffer *audio_buffer_create(int channels, int size) {
+  AudioBuffer *audio = malloc(sizeof(AudioBuffer));
   check_mem(audio);
   audio->size     = size;
   audio->channels = channels;
@@ -22,7 +22,7 @@ RawAudio *raw_audio_create(int channels, int size) {
   return NULL;
 }
 
-void raw_audio_destroy(RawAudio *audio) {
+void audio_buffer_destroy(AudioBuffer *audio) {
   check(audio != NULL, "Invalid audio");
   check(audio->buffers != NULL, "Invalid audio buffers");
   int i;

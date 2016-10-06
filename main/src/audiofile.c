@@ -34,7 +34,7 @@ AudioFile *write_audio_file(char *filename,
     return af;
 }
 
-RawAudio *get_audio_data(AudioFile *af, int size) {
+AudioBuffer *get_audio_data(AudioFile *af, int size) {
 
     if (af->finished) return NULL;
 
@@ -54,7 +54,7 @@ RawAudio *get_audio_data(AudioFile *af, int size) {
         }
     }
 
-    RawAudio *audio = raw_audio_create(channels, size);
+    AudioBuffer *audio = audio_buffer_create(channels, size);
     for (i = 0; i < channels; i++) {
         for (j = 0; j < size; j++) {
             pos = (j * channels) + i;
@@ -66,7 +66,7 @@ RawAudio *get_audio_data(AudioFile *af, int size) {
 
 }
 
-void write_audio_data(AudioFile *af, RawAudio *audio) {
+void write_audio_data(AudioFile *af, AudioBuffer *audio) {
 
     int i,j;
     int pos;
@@ -81,7 +81,7 @@ void write_audio_data(AudioFile *af, RawAudio *audio) {
 
     sf_writef_float(af->sf, iobuffer, audio->size);
 
-    raw_audio_destroy(audio);
+    audio_buffer_destroy(audio);
 }
 
 void cleanup_audio_file(AudioFile *af) {

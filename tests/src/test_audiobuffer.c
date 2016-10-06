@@ -1,22 +1,22 @@
 #include "minunit.h"
 
-#include "rawaudio.h"
+#include "audiobuffer.h"
 
-static char * test_rawaudio() {
+static char * test_audiobuffer() {
   int channels = 4;
   int size = 2048;
-  RawAudio *audio = raw_audio_create(channels, size);
-  mu_assert(audio, "Failed to create RawAudio");
+  AudioBuffer *audio = audio_buffer_create(channels, size);
+  mu_assert(audio, "Failed to create AudioBuffer");
   mu_assert(audio->size == size, "Incorrect size");
   mu_assert(audio->channels == channels, "Incorrect channels");
-  raw_audio_destroy(audio);
+  audio_buffer_destroy(audio);
   return 0;
 }
 
 char *all_tests() {
     mu_suite_start();
 
-    mu_run_test(test_rawaudio);
+    mu_run_test(test_audiobuffer);
 
     return NULL;
 }

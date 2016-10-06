@@ -2,9 +2,9 @@
 
 #include "stretch.h"
 #include "audiostream.h"
-#include "rawaudio.h"
+#include "audiobuffer.h"
 
-RawAudio *audio_file_stream_reader(AudioStream *stream, int sample_count) {
+AudioBuffer *audio_file_stream_reader(AudioStream *stream, int sample_count) {
   printf("Called stream reader\n");
   return NULL;
 }

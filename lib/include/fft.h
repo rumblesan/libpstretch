@@ -2,7 +2,7 @@
 #define LIBPSTRETCH_FFT_H
 
 #include <fftw3.h>
-#include "rawaudio.h"
+#include "audiobuffer.h"
 
 typedef struct FFT {
 
@@ -20,7 +20,7 @@ typedef struct FFT {
 } FFT;
 
 FFT *fft_create (int window_size);
-void fft_run(FFT *fft, RawAudio *audio);
+void fft_run(FFT *fft, AudioBuffer *audio);
 void fft_window_data(FFT *fft);
 void fft_normalise_data(FFT *fft);
 void fft_samp_to_freq(FFT *fft);

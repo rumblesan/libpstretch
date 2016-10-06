@@ -5,14 +5,14 @@ set(HEADERS
   "include/audiostream.h"
   "include/fft.h"
   "include/pstretch.h"
-  "include/rawaudio.h"
+  "include/audiobuffer.h"
   "include/stretch.h"
   )
 
 set(SOURCES
   "src/audiostream.c"
   "src/fft.c"
-  "src/rawaudio.c"
+  "src/audiobuffer.c"
   "src/stretch.c"
   )
 
