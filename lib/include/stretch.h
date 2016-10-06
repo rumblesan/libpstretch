@@ -42,4 +42,3 @@ AudioBuffer *stretch_output(Stretch *s, AudioBuffer *audio);
 void stretch_destroy(Stretch *s);
 
 #endif
-

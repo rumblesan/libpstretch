@@ -7,7 +7,6 @@
 
 #include "bclib/dbg.h"
 
-
 Stretch *stretch_create(int channels,
                         int window_size,
                         float stretch,
@@ -38,12 +37,11 @@ Stretch *stretch_create(int channels,
   check(s->input, "Could not create input audio buffer");
   s->old_output = audio_buffer_create(s->channels, s->window_size);
   check(s->old_output, "Could not create old_output audio buffer");
-  int i,j;
 
-  for (i = 0; i < s->channels; i++) {
-    for (j = 0; j < s->window_size; j++) {
-      s->input->buffers[i][j] = 0.0;
-      s->old_output->buffers[i][j] = 0.0;
+  for (int c = 0; c < s->channels; c++) {
+    for (int j = 0; j < s->window_size; j++) {
+      s->input->buffers[c][j] = 0.0;
+      s->old_output->buffers[c][j] = 0.0;
     }
   }
 
@@ -73,7 +71,7 @@ AudioBuffer *stretch_run(Stretch *stretch) {
 void stretch_add_samples(Stretch *s) {
 
   AudioBuffer *tmp_samples;
-  int i,j;
+  int j;
   int offset = (int) floor(s->input_offset);
   int size   = s->input->size;
   int rem    = size - offset;
@@ -86,12 +84,12 @@ void stretch_add_samples(Stretch *s) {
   }
   tmp_samples = audio_buffer_create(s->channels, rem+audio->size);
   check(tmp_samples, "Could not create temporary audio buffer");
-  for (i = 0; i < s->channels; i++) {
+  for (int c = 0; c < s->channels; c++) {
     for (j = 0; j < rem; j++) {
-      tmp_samples->buffers[i][j] = s->input->buffers[i][j+offset];
+      tmp_samples->buffers[c][j] = s->input->buffers[c][j+offset];
     }
     for (j = 0; j < audio->size; j++) {
-      tmp_samples->buffers[i][j+rem] = audio->buffers[i][j];
+      tmp_samples->buffers[c][j+rem] = audio->buffers[c][j];
     }
   }
 
@@ -111,15 +109,14 @@ void stretch_add_samples(Stretch *s) {
  */
 AudioBuffer *stretch_window(Stretch *s) {
 
-  int i, j;
   int offset = (int) floor(s->input_offset);
 
   AudioBuffer *audio = audio_buffer_create(s->channels, s->window_size);
   check(audio, "Could not create stretch window audio");
 
-  for (i = 0; i < s->channels; i++) {
-    for (j = 0; j < s->window_size; j++) {
-      audio->buffers[i][j] = s->input->buffers[i][j+offset];
+  for (int c = 0; c < s->channels; c++) {
+    for (int j = 0; j < s->window_size; j++) {
+      audio->buffers[c][j] = s->input->buffers[c][j+offset];
     }
   }
 
@@ -146,18 +143,16 @@ AudioBuffer *stretch_window(Stretch *s) {
  */
 AudioBuffer *stretch_output(Stretch *s, AudioBuffer *audio) {
 
-  int i,j;
-  float data;
   int halfwindow = s->window_size/2;
 
   AudioBuffer *output = audio_buffer_create(s->channels, halfwindow);
   check(output, "Could not create stretch output audio");
 
-  for (i = 0; i < s->channels;i++) {
-    for (j = 0; j < halfwindow;j++) {
-      data  = s->old_output->buffers[i][j+halfwindow];
-      data += audio->buffers[i][j];
-      output->buffers[i][j] = data;
+  for (int c = 0; c < s->channels;c++) {
+    for (int j = 0; j < halfwindow;j++) {
+      float data  = s->old_output->buffers[c][j+halfwindow];
+      data += audio->buffers[c][j];
+      output->buffers[c][j] = data;
     }
   }
   audio_buffer_destroy(s->old_output);
@@ -179,4 +174,3 @@ void stretch_destroy(Stretch *s) {
  error:
   debug("Error cleaning up stretch");
 }
-

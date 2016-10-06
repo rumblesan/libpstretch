@@ -2,6 +2,7 @@
 #define LIBPSTRETCH_FFT_H
 
 #include <fftw3.h>
+
 #include "audiobuffer.h"
 
 typedef struct FFT {
