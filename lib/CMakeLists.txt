@@ -25,6 +25,8 @@ find_package(BCLib REQUIRED)
 include_directories("${BCLIB_INCLUDE_DIRS}")
 target_link_libraries(pstretch bclib)
 
+target_link_libraries(pstretch fftw3f)
+
 install(TARGETS pstretch
     DESTINATION lib
     EXPORT LibPStretchTargets
@@ -32,5 +34,3 @@ install(TARGETS pstretch
     PUBLIC_HEADER DESTINATION "${INSTALL_INCLUDE_DIR}/pstretch"
     COMPONENT dev
     )
-
-target_link_libraries(pstretch fftw3f sndfile mad mp3lame)
