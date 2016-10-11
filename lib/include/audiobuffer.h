@@ -11,6 +11,7 @@ typedef struct AudioBuffer {
 } AudioBuffer;
 
 AudioBuffer *audio_buffer_create(int channels, int size);
+AudioBuffer *audio_buffer_from_float(float *audio, int channels, int size);
 void audio_buffer_destroy(AudioBuffer *audio);
 
 #endif

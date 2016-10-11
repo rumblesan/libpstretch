@@ -21,6 +21,20 @@ AudioBuffer *audio_buffer_create(int channels, int size) {
   return NULL;
 }
 
+AudioBuffer *audio_buffer_from_float(float *audio, int channels, int size) {
+  AudioBuffer *ab = audio_buffer_create(channels, size);
+  check_mem(ab);
+  for (int i = 0; i < channels; i++) {
+    for (int j = 0; j < size; j++) {
+      int pos = (j * channels) + i;
+      ab->buffers[i][j] = audio[pos];
+    }
+  }
+  return ab;
+ error:
+  return NULL;
+}
+
 void audio_buffer_destroy(AudioBuffer *audio) {
   check(audio != NULL, "Invalid audio");
   check(audio->buffers != NULL, "Invalid audio buffers");
