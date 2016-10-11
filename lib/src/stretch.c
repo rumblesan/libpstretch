@@ -80,32 +80,34 @@ void stretch_read_samples(Stretch *s) {
 
 /* Add samples to the input buffer of the stretch struct
  */
-void stretch_load_samples(Stretch *s, AudioBuffer *audio) {
+void stretch_load_samples(Stretch *s, AudioBuffer *new_audio) {
 
-  AudioBuffer *tmp_samples;
-  int offset = (int) floor(s->input_offset);
-  int size   = s->input->size;
-  int rem    = size - offset;
+  AudioBuffer *new_input = NULL;
 
-  tmp_samples = audio_buffer_create(s->channels, rem+audio->size);
-  check(tmp_samples, "Could not create temporary audio buffer");
+  int offset   = (int) floor(s->input_offset);
+  int size     = s->input->size;
+  int rem      = size - offset;
+
+  new_input = audio_buffer_create(s->channels, rem + new_audio->size);
+  check(new_input, "Could not create temporary audio buffer");
+
   for (int c = 0; c < s->channels; c++) {
     for (int j = 0; j < rem; j++) {
-      tmp_samples->buffers[c][j] = s->input->buffers[c][j+offset];
+      new_input->buffers[c][j] = s->input->buffers[c][j+offset];
     }
-    for (int k = 0; k < audio->size; k++) {
-      tmp_samples->buffers[c][k+rem] = audio->buffers[c][k];
+    for (int k = 0; k < new_audio->size; k++) {
+      new_input->buffers[c][k+rem] = new_audio->buffers[c][k];
     }
   }
 
   audio_buffer_destroy(s->input);
-  s->input           = tmp_samples;
+  s->input           = new_input;
   s->input_offset   -= floor(s->input_offset);
-  if (floor(s->input_offset) < s->window_size) {
+  if (s->input->size > s->window_size) {
     s->need_more_audio = 0;
   }
 
-  audio_buffer_destroy(audio);
+  audio_buffer_destroy(new_audio);
   return;
  error:
   debug("Error adding samples to stretch");
@@ -130,7 +132,7 @@ AudioBuffer *stretch_window(Stretch *s) {
   float offset_inc = s->speed * ((float)s->window_size * 0.5);
   s->input_offset += offset_inc;
 
-  if (floor(s->input_offset)+offset_inc >= s->window_size) {
+  if ((s->input->size - ceil(s->input_offset)) <= s->window_size) {
     s->need_more_audio = 1;
     if (s->stream_finished) {
       log_info("Stream finished");
