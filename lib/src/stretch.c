@@ -132,9 +132,8 @@ AudioBuffer *stretch_window(Stretch *s) {
 
   if (floor(s->input_offset)+offset_inc >= s->window_size) {
     s->need_more_audio = 1;
-    log_info("Need more audio");
     if (s->stream_finished) {
-      log_info("Stream also finished");
+      log_info("Stream finished");
       s->finished = 1;
     }
   }
