@@ -22,15 +22,32 @@ AudioBuffer *audio_buffer_create(int channels, int size) {
 }
 
 AudioBuffer *audio_buffer_from_float(float *audio, int channels, int size) {
-  AudioBuffer *ab = audio_buffer_create(channels, size);
+  int chanlen = size / channels;
+  AudioBuffer *ab = audio_buffer_create(channels, chanlen);
   check_mem(ab);
   for (int i = 0; i < channels; i++) {
-    for (int j = 0; j < size; j++) {
+    for (int j = 0; j < chanlen; j++) {
       int pos = (j * channels) + i;
       ab->buffers[i][j] = audio[pos];
     }
   }
   return ab;
+ error:
+  return NULL;
+}
+
+float *audio_buffer_to_float(AudioBuffer *buffer) {
+  int size = buffer->size * buffer->channels;
+  float *audio = malloc(size * sizeof(float));
+  check_mem(audio);
+
+  for (int i = 0; i < buffer->channels; i++) {
+    for (int j = 0; j < buffer->size; j++) {
+      int pos = (j * buffer->channels) + i;
+      audio[pos] = buffer->buffers[i][j];
+    }
+  }
+  return audio;
  error:
   return NULL;
 }
