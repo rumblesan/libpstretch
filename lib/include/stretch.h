@@ -36,7 +36,8 @@ Stretch *stretch_create(int channels,
                         );
 
 AudioBuffer *stretch_run(Stretch *stretch);
-void stretch_add_samples(Stretch *s);
+void stretch_load_samples(Stretch *s, AudioBuffer *audio);
+void stretch_read_samples(Stretch *s);
 AudioBuffer *stretch_window(Stretch *s);
 AudioBuffer *stretch_output(Stretch *s, AudioBuffer *audio);
 void stretch_destroy(Stretch *s);

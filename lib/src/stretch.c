@@ -58,7 +58,7 @@ Stretch *stretch_create(int channels,
  */
 AudioBuffer *stretch_run(Stretch *stretch) {
   if (stretch->need_more_audio) {
-    stretch_add_samples(stretch);
+    stretch_read_samples(stretch);
   }
   AudioBuffer *tmp_audio = stretch_window(stretch);
   fft_run(stretch->fft, tmp_audio);
@@ -68,35 +68,42 @@ AudioBuffer *stretch_run(Stretch *stretch) {
 /* Retrieve required number of samples from audio input stream
  * add it to the input buffer of the stretch struct
  */
-void stretch_add_samples(Stretch *s) {
-
-  AudioBuffer *tmp_samples;
-  int j;
-  int offset = (int) floor(s->input_offset);
-  int size   = s->input->size;
-  int rem    = size - offset;
-
+void stretch_read_samples(Stretch *s) {
   if (s->stream->finished) return;
   AudioBuffer *audio = s->reader(s->stream, s->window_size);
   if (s->stream->finished) {
     log_info("Stream is finished");
     s->stream_finished = 1;
   }
+  stretch_load_samples(s, audio);
+}
+
+/* Add samples to the input buffer of the stretch struct
+ */
+void stretch_load_samples(Stretch *s, AudioBuffer *audio) {
+
+  AudioBuffer *tmp_samples;
+  int offset = (int) floor(s->input_offset);
+  int size   = s->input->size;
+  int rem    = size - offset;
+
   tmp_samples = audio_buffer_create(s->channels, rem+audio->size);
   check(tmp_samples, "Could not create temporary audio buffer");
   for (int c = 0; c < s->channels; c++) {
-    for (j = 0; j < rem; j++) {
+    for (int j = 0; j < rem; j++) {
       tmp_samples->buffers[c][j] = s->input->buffers[c][j+offset];
     }
-    for (j = 0; j < audio->size; j++) {
-      tmp_samples->buffers[c][j+rem] = audio->buffers[c][j];
+    for (int k = 0; k < audio->size; k++) {
+      tmp_samples->buffers[c][k+rem] = audio->buffers[c][k];
     }
   }
 
   audio_buffer_destroy(s->input);
   s->input           = tmp_samples;
   s->input_offset   -= floor(s->input_offset);
-  s->need_more_audio = 0;
+  if (floor(s->input_offset) < s->window_size) {
+    s->need_more_audio = 0;
+  }
 
   audio_buffer_destroy(audio);
   return;
