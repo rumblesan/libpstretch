@@ -59,15 +59,6 @@ Args parse_args(int argc, char *argv[]) {
     return args;
 }
 
-AudioBuffer *audio_file_stream_reader(AudioStream *stream, int sample_count) {
-  AudioFile *af = stream->source;
-  AudioBuffer *tmp_audio = get_audio_data(af, sample_count);
-  if (af->finished) {
-    stream->finished = 1;
-  }
-  return tmp_audio;
-}
-
 
 int main (int argc, char *argv[]) {
 
@@ -78,17 +69,21 @@ int main (int argc, char *argv[]) {
                                      af->info.samplerate,
                                      af->info.channels,
                                      af->info.format);
-    AudioStream *stream = audio_stream_create(af);
 
     Stretch *stretch = stretch_create(af->info.channels,
                                       args.window_size,
-                                      args.stretch,
-                                      &audio_file_stream_reader,
-                                      stream
-                                      );
+                                      args.stretch);
+    AudioBuffer *new_audio;
 
-    while (!stretch->finished) {
-      write_audio_data(of, stretch_run(stretch));
+    while (!(stretch->finished && stretch->need_more_audio)) {
+      if (stretch->need_more_audio) {
+        new_audio = get_audio_data(af, stretch->window_size);
+        stretch_load_samples(stretch, new_audio);
+        if (af->finished) stretch->finished = 1;
+      }
+      if (!stretch->need_more_audio) {
+        write_audio_data(of, stretch_run(stretch));
+      }
     }
 
     stretch_destroy(stretch);

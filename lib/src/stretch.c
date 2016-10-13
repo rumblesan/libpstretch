@@ -7,12 +7,7 @@
 
 #include "bclib/dbg.h"
 
-Stretch *stretch_create(int channels,
-                        int window_size,
-                        float stretch,
-                        stream_reader reader,
-                        AudioStream *stream
-                        ) {
+Stretch *stretch_create(int channels, int window_size, float stretch) {
 
   Stretch *s      = malloc(sizeof(Stretch));
   check_mem(s);
@@ -22,10 +17,6 @@ Stretch *stretch_create(int channels,
 
   s->fft          = fft_create(window_size);
   check(s->fft, "Could not create FFT");
-
-  s->reader = reader;
-  s->stream = stream;
-  s->stream_finished = 0;
 
   s->need_more_audio = 1;
   s->finished = 0;
@@ -52,30 +43,13 @@ Stretch *stretch_create(int channels,
 
 /* Run actual stretching algorithm
  *
- * Get audio from stream when necessary
  * Select window of audio to stretch
  * Process audio through FFT
  */
 AudioBuffer *stretch_run(Stretch *stretch) {
-  if (stretch->need_more_audio) {
-    stretch_read_samples(stretch);
-  }
   AudioBuffer *tmp_audio = stretch_window(stretch);
   fft_run(stretch->fft, tmp_audio);
   return stretch_output(stretch, tmp_audio);
-}
-
-/* Retrieve required number of samples from audio input stream
- * add it to the input buffer of the stretch struct
- */
-void stretch_read_samples(Stretch *s) {
-  if (s->stream->finished) return;
-  AudioBuffer *audio = s->reader(s->stream, s->window_size);
-  if (s->stream->finished) {
-    log_info("Stream is finished");
-    s->stream_finished = 1;
-  }
-  stretch_load_samples(s, audio);
 }
 
 /* Add samples to the input buffer from an array of floats
@@ -145,10 +119,6 @@ AudioBuffer *stretch_window(Stretch *s) {
 
   if ((s->input->size - ceil(s->input_offset)) <= s->window_size) {
     s->need_more_audio = 1;
-    if (s->stream_finished) {
-      log_info("Stream finished");
-      s->finished = 1;
-    }
   }
 
   return audio;

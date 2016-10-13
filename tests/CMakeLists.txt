@@ -1,7 +1,6 @@
 include_directories(include)
 
 set(TEST_SOURCES
-    "src/test_audio_stream.c"
     "src/test_audiobuffer.c"
     "src/test_stretch.c"
     "src/test_fft.c"
