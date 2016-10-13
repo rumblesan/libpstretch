@@ -78,6 +78,17 @@ void stretch_read_samples(Stretch *s) {
   stretch_load_samples(s, audio);
 }
 
+/* Add samples to the input buffer from an array of floats
+ */
+void stretch_load_floats(Stretch *s, float *audio, int channels, int size) {
+  AudioBuffer *new_input = audio_buffer_from_float(audio, channels, size);
+  check(new_input, "Could not create new audio buffer");
+  stretch_load_samples(s, new_input);
+  return;
+ error:
+  debug("Error adding samples to stretch");
+}
+
 /* Add samples to the input buffer of the stretch struct
  */
 void stretch_load_samples(Stretch *s, AudioBuffer *new_audio) {
