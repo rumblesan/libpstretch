@@ -3,6 +3,7 @@
 #include <unistd.h>
 #include "wavstretch.h"
 #include "audiofile.h"
+#include "oggencode.h"
 #include "pstretch.h"
 
 void usage(int exitval) {
@@ -65,30 +66,35 @@ int main (int argc, char *argv[]) {
     Args args = parse_args(argc, argv);
 
     AudioFile *af = read_audio_file(args.input_file);
-    AudioFile *of = write_audio_file(args.output_file,
-                                     af->info.samplerate,
-                                     af->info.channels,
-                                     af->info.format);
 
     Stretch *stretch = stretch_create(af->info.channels,
                                       args.window_size,
                                       args.stretch);
     AudioBuffer *new_audio;
 
-    while (!(stretch->finished && stretch->need_more_audio)) {
+    FILE *outfile = fopen(args.output_file, "w");
+    OggEncoderState *encoder = ogg_encoder_state();
+    AudioBuffer *output = NULL;
+
+    setup_encoder(encoder, 2);
+    add_headers(encoder, outfile);
+
+    int oggfinished = 0;
+    while (!(stretch->finished && stretch->need_more_audio && !oggfinished)) {
       if (stretch->need_more_audio) {
         new_audio = get_audio_data(af, stretch->window_size);
         stretch_load_samples(stretch, new_audio);
         if (af->finished) stretch->finished = 1;
       }
       if (!stretch->need_more_audio) {
-        write_audio_data(of, stretch_run(stretch));
+        output = stretch_run(stretch);
+        write_audio(encoder, output->size, output->buffers, outfile);
       }
     }
 
     stretch_destroy(stretch);
     cleanup_audio_file(af);
-    cleanup_audio_file(of);
+    free(encoder);
 
     return 0;
 }
