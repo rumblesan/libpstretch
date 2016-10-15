@@ -78,8 +78,7 @@ int main (int argc, char *argv[]) {
     OggEncoderState *encoder = ogg_encoder_state(2, 44100, 0.5);
     add_headers(encoder, outfile);
 
-    int oggfinished = 0;
-    while (!(af->finished && stretch->need_more_audio && !oggfinished)) {
+    while (!(af->finished && stretch->need_more_audio)) {
       if (stretch->need_more_audio) {
         new_audio = get_audio_data(af, stretch->window_size);
         stretch_load_samples(stretch, new_audio);
