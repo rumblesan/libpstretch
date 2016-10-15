@@ -42,7 +42,6 @@ void add_headers(OggEncoderState *encoder, FILE *fp) {
 
   /* pick a random serial number; that way we can more likely build
      chained streams just by concatenation */
-  srand(time(NULL));
   ogg_stream_init(&(encoder->os),rand());
 
   /* Vorbis streams begin with three headers; the initial header (with
