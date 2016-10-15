@@ -76,12 +76,8 @@ void stretch_load_samples(Stretch *s, AudioBuffer *new_audio) {
   check(new_input, "Could not create temporary audio buffer");
 
   for (int c = 0; c < s->channels; c++) {
-    for (int j = 0; j < rem; j++) {
-      new_input->buffers[c][j] = s->input->buffers[c][j+offset];
-    }
-    for (int k = 0; k < new_audio->size; k++) {
-      new_input->buffers[c][k+rem] = new_audio->buffers[c][k];
-    }
+    memcpy(  new_input->buffers[c],       &(s->input->buffers[c][offset]), rem * sizeof(float));
+    memcpy(&(new_input->buffers[c][rem]), new_audio->buffers[c],           new_audio->size * sizeof(float));
   }
 
   audio_buffer_destroy(s->input);
@@ -107,9 +103,7 @@ AudioBuffer *stretch_window(Stretch *s) {
   check(audio, "Could not create stretch window audio");
 
   for (int c = 0; c < s->channels; c++) {
-    for (int j = 0; j < s->window_size; j++) {
-      audio->buffers[c][j] = s->input->buffers[c][j+offset];
-    }
+    memcpy(audio->buffers[c], &(s->input->buffers[c][offset]), s->window_size * sizeof(float));
   }
 
   float offset_inc = s->speed * ((float)s->window_size * 0.5);
