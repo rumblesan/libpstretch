@@ -70,9 +70,7 @@ void add_headers(OggEncoderState *encoder, FILE *fp) {
   return;
 }
 
-int write_audio(OggEncoderState *encoder, long samplespc, float **audio, FILE *fp) {
-  int finished = 0;
-
+int add_audio(OggEncoderState *encoder, long samplespc, float **audio) {
   float **buffer=vorbis_analysis_buffer(&(encoder->vd),READ);
 
   for (long t = 0; t < samplespc; t+= 1) {
@@ -84,7 +82,11 @@ int write_audio(OggEncoderState *encoder, long samplespc, float **audio, FILE *f
   free(audio);
 
   /* tell the library how much we actually submitted */
-  vorbis_analysis_wrote(&(encoder->vd), samplespc);
+  return vorbis_analysis_wrote(&(encoder->vd), samplespc);
+}
+
+int write_audio(OggEncoderState *encoder, FILE *fp) {
+  int finished = 0;
 
   /* vorbis does some data preanalysis, then divvies up blocks for
      more involved (potentially parallel) processing.  Get a single
@@ -116,7 +118,10 @@ int write_audio(OggEncoderState *encoder, long samplespc, float **audio, FILE *f
         /* this could be set above, but for illustrative purposes, I do
            it here (to show that vorbis does know where the stream ends) */
 
-        if(ogg_page_eos(&new_page)) finished = 1;
+        if(ogg_page_eos(&new_page)) {
+          log_info("Finished");
+          finished = 1;
+        }
       }
     }
 

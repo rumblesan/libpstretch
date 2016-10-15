@@ -86,7 +86,8 @@ int main (int argc, char *argv[]) {
       }
       if (!stretch->need_more_audio) {
         output = stretch_run(stretch);
-        write_audio(encoder, output->size, output->buffers, outfile);
+        add_audio(encoder, output->size, output->buffers);
+        write_audio(encoder, outfile);
       }
     }
 
