@@ -10,8 +10,6 @@ typedef struct OggEncoderState {
 
   ogg_stream_state  os;
 
-  ogg_page          og;
-
   vorbis_info       vi;
 
   vorbis_comment    vc;
