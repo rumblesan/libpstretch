@@ -12,8 +12,6 @@ typedef struct OggEncoderState {
 
   vorbis_info       vi;
 
-  vorbis_comment    vc;
-
   vorbis_dsp_state  vd;
   vorbis_block      vb;
 

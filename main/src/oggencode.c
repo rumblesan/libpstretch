@@ -28,10 +28,13 @@ int setup_encoder(OggEncoderState *encoder, int channels) {
 
 void add_headers(OggEncoderState *encoder, FILE *fp) {
   /* add a comment */
-  vorbis_comment_init(&(encoder->vc));
-  vorbis_comment_add_tag(&(encoder->vc),"ENCODER","encoder_example.c");
-  vorbis_comment_add_tag(&(encoder->vc),"ARTIST","Rumblesan");
-  vorbis_comment_add_tag(&(encoder->vc),"TITLE","Test song");
+  vorbis_comment *vc = malloc(sizeof(vorbis_comment));
+  check_mem(vc);
+
+  vorbis_comment_init(vc);
+  vorbis_comment_add_tag(vc, "ENCODER", "encoder_example.c");
+  vorbis_comment_add_tag(vc, "ARTIST", "Rumblesan");
+  vorbis_comment_add_tag(vc, "TITLE", "More Efficient");
 
   /* set up the analysis state and auxiliary encoding storage */
   vorbis_analysis_init(&(encoder->vd),&(encoder->vi));
@@ -55,7 +58,7 @@ void add_headers(OggEncoderState *encoder, FILE *fp) {
     ogg_packet header_comm;
     ogg_packet header_code;
 
-    vorbis_analysis_headerout(&(encoder->vd),&(encoder->vc),&header,&header_comm,&header_code);
+    vorbis_analysis_headerout(&(encoder->vd), vc,&header,&header_comm,&header_code);
 
     ogg_stream_packetin(&(encoder->os),&header); /* automatically placed in its own page */
     ogg_stream_packetin(&(encoder->os),&header_comm);
@@ -78,6 +81,8 @@ void add_headers(OggEncoderState *encoder, FILE *fp) {
     }
 
   }
+  vorbis_comment_clear(vc);
+  free(vc);
   return;
  error:
   log_err("Could not add headers");
@@ -152,7 +157,6 @@ void cleanup_encoder(OggEncoderState *encoder) {
   ogg_stream_clear(&(encoder->os));
   vorbis_block_clear(&(encoder->vb));
   vorbis_dsp_clear(&(encoder->vd));
-  vorbis_comment_clear(&(encoder->vc));
   vorbis_info_clear(&(encoder->vi));
   free(encoder);
 }
