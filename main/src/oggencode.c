@@ -13,21 +13,25 @@
 #define READ 1024
 signed char readbuffer[READ*4+44]; /* out of the data segment, not the stack */
 
-OggEncoderState *ogg_encoder_state() {
-  OggEncoderState *state = malloc(sizeof(OggEncoderState));
-  check_mem(state);
-  return state;
+OggEncoderState *ogg_encoder_state(long channels, long samplerate, float quality) {
+  OggEncoderState *encoder = malloc(sizeof(OggEncoderState));
+  check_mem(encoder);
+
+  vorbis_info_init(&(encoder->vi));
+
+  int initerr = vorbis_encode_init_vbr(&(encoder->vi), channels, samplerate, quality);
+  check(!initerr, "Error initialising encoder");
+
+  /* set up the analysis state and auxiliary encoding storage */
+  vorbis_analysis_init(&(encoder->vd),&(encoder->vi));
+  vorbis_block_init(&(encoder->vd),&(encoder->vb));
+  return encoder;
  error:
   return NULL;
 }
 
-int setup_encoder(OggEncoderState *encoder, int channels) {
-  vorbis_info_init(&(encoder->vi));
-  return vorbis_encode_init_vbr(&(encoder->vi), channels, 44100, 0.1);
-}
-
 void add_headers(OggEncoderState *encoder, FILE *fp) {
-  /* add a comment */
+
   vorbis_comment *vc = malloc(sizeof(vorbis_comment));
   check_mem(vc);
 
@@ -36,11 +40,6 @@ void add_headers(OggEncoderState *encoder, FILE *fp) {
   vorbis_comment_add_tag(vc, "ARTIST", "Rumblesan");
   vorbis_comment_add_tag(vc, "TITLE", "More Efficient");
 
-  /* set up the analysis state and auxiliary encoding storage */
-  vorbis_analysis_init(&(encoder->vd),&(encoder->vi));
-  vorbis_block_init(&(encoder->vd),&(encoder->vb));
-
-  /* set up our packet->stream encoder */
   /* pick a random serial number; that way we can more likely build
      chained streams just by concatenation */
   srand(time(NULL));

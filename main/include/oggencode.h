@@ -18,9 +18,7 @@ typedef struct OggEncoderState {
 } OggEncoderState;
 
 
-OggEncoderState *ogg_encoder_state();
-
-int setup_encoder(OggEncoderState *encoder, int channels);
+OggEncoderState *ogg_encoder_state(long channels, long samplerate, float quality);
 
 void cleanup_encoder(OggEncoderState *encoder);
 

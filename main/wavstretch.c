@@ -73,10 +73,9 @@ int main (int argc, char *argv[]) {
     AudioBuffer *new_audio;
 
     FILE *outfile = fopen(args.output_file, "w");
-    OggEncoderState *encoder = ogg_encoder_state();
     AudioBuffer *output = NULL;
 
-    setup_encoder(encoder, 2);
+    OggEncoderState *encoder = ogg_encoder_state(2, 44100, 0.5);
     add_headers(encoder, outfile);
 
     int oggfinished = 0;
