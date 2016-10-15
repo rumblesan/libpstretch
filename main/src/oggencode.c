@@ -10,8 +10,6 @@
 
 #include "bclib/dbg.h"
 
-#define READ 1024
-signed char readbuffer[READ*4+44]; /* out of the data segment, not the stack */
 
 OggEncoderState *ogg_encoder_state(long channels, long samplerate, float quality) {
   OggEncoderState *encoder = malloc(sizeof(OggEncoderState));
@@ -71,7 +69,7 @@ int add_audio(OggEncoderState *encoder, long channels, long samplespc, float **a
   if (samplespc == 0) {
     return vorbis_analysis_wrote(&(encoder->vd), 0);
   } else {
-    float **buffer = vorbis_analysis_buffer(&(encoder->vd), READ);
+    float **buffer = vorbis_analysis_buffer(&(encoder->vd), samplespc);
     for (int c = 0; c < channels; c += 1) {
       memcpy(buffer[c], audio[c], samplespc * sizeof(float));
     }
