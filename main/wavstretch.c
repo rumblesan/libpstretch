@@ -76,7 +76,8 @@ int main (int argc, char *argv[]) {
     AudioBuffer *output = NULL;
 
     OggEncoderState *encoder = ogg_encoder_state(2, 44100, 0.5);
-    add_headers(encoder, outfile);
+    set_headers(encoder);
+    write_headers(encoder, outfile);
 
     while (!(af->finished && stretch->need_more_audio)) {
       if (stretch->need_more_audio) {

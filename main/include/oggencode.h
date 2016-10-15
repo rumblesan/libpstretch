@@ -10,6 +10,8 @@ typedef struct OggEncoderState {
 
   ogg_stream_state  os;
 
+  vorbis_comment    vc;
+
   vorbis_info       vi;
 
   vorbis_dsp_state  vd;
@@ -22,7 +24,9 @@ OggEncoderState *ogg_encoder_state(long channels, long samplerate, float quality
 
 void cleanup_encoder(OggEncoderState *encoder);
 
-void add_headers(OggEncoderState *encoder, FILE *fp);
+void set_headers(OggEncoderState *encoder);
+
+void write_headers(OggEncoderState *encoder, FILE *fp);
 
 int add_audio(OggEncoderState *encoder, long channels, long length, float **audio);
 

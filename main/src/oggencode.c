@@ -18,6 +18,7 @@ OggEncoderState *ogg_encoder_state(long channels, long samplerate, float quality
   check_mem(encoder);
 
   vorbis_info_init(&(encoder->vi));
+  vorbis_comment_init(&(encoder->vc));
 
   int initerr = vorbis_encode_init_vbr(&(encoder->vi), channels, samplerate, quality);
   check(!initerr, "Error initialising encoder");
@@ -30,18 +31,17 @@ OggEncoderState *ogg_encoder_state(long channels, long samplerate, float quality
   return NULL;
 }
 
-void add_headers(OggEncoderState *encoder, FILE *fp) {
+void set_headers(OggEncoderState *encoder) {
+  vorbis_comment_add_tag(&(encoder->vc), "ENCODER", "encoder_example.c");
+  vorbis_comment_add_tag(&(encoder->vc), "ARTIST", "Rumblesan");
+  vorbis_comment_add_tag(&(encoder->vc), "TITLE", "More Efficient");
+}
 
-  vorbis_comment vc;
+void write_headers(OggEncoderState *encoder, FILE *fp) {
 
   ogg_packet header;
   ogg_packet header_comm;
   ogg_packet header_code;
-
-  vorbis_comment_init(&vc);
-  vorbis_comment_add_tag(&vc, "ENCODER", "encoder_example.c");
-  vorbis_comment_add_tag(&vc, "ARTIST", "Rumblesan");
-  vorbis_comment_add_tag(&vc, "TITLE", "More Efficient");
 
   ogg_stream_init(&(encoder->os), rand());
 
@@ -52,7 +52,7 @@ void add_headers(OggEncoderState *encoder, FILE *fp) {
      make the headers, then pass them to libvorbis one at a time;
      libvorbis handles the additional Ogg bitstream constraints */
 
-  vorbis_analysis_headerout(&(encoder->vd), &vc, &header, &header_comm, &header_code);
+  vorbis_analysis_headerout(&(encoder->vd), &(encoder->vc), &header, &header_comm, &header_code);
 
   ogg_stream_packetin(&(encoder->os), &header);
   ogg_stream_packetin(&(encoder->os), &header_comm);
@@ -65,9 +65,6 @@ void add_headers(OggEncoderState *encoder, FILE *fp) {
     fwrite(output_page.header, 1, output_page.header_len, fp);
     fwrite(output_page.body, 1, output_page.body_len, fp);
   }
-
-  vorbis_comment_clear(&vc);
-  return;
 }
 
 int add_audio(OggEncoderState *encoder, long channels, long samplespc, float **audio) {
@@ -127,6 +124,7 @@ int write_audio(OggEncoderState *encoder, FILE *fp) {
 }
 
 void cleanup_encoder(OggEncoderState *encoder) {
+  vorbis_comment_clear(&(encoder->vc));
   ogg_stream_clear(&(encoder->os));
   vorbis_block_clear(&(encoder->vb));
   vorbis_dsp_clear(&(encoder->vd));
