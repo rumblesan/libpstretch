@@ -66,6 +66,7 @@ void add_headers(OggEncoderState *encoder, FILE *fp) {
     fwrite(output_page.body, 1, output_page.body_len, fp);
   }
 
+  vorbis_comment_clear(&vc);
   return;
 }
 
