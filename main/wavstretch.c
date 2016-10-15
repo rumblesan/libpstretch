@@ -90,6 +90,12 @@ int main (int argc, char *argv[]) {
       }
     }
 
+    int oggfinished = 0;
+    add_audio(encoder, 0, NULL);
+    while (!oggfinished) {
+      oggfinished = write_audio(encoder, outfile);
+    }
+
     stretch_destroy(stretch);
     cleanup_audio_file(af);
     cleanup_encoder(encoder);
