@@ -26,6 +26,8 @@ OggEncoderState *ogg_encoder_state();
 
 int setup_encoder(OggEncoderState *encoder, int channels);
 
+void cleanup_encoder(OggEncoderState *encoder);
+
 void add_headers(OggEncoderState *encoder, FILE *fp);
 
 int write_audio(OggEncoderState *encoder, long length, float **audio, FILE *fp);

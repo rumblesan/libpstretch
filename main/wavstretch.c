@@ -94,7 +94,7 @@ int main (int argc, char *argv[]) {
 
     stretch_destroy(stretch);
     cleanup_audio_file(af);
-    free(encoder);
+    cleanup_encoder(encoder);
 
     return 0;
 }

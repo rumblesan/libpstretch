@@ -108,7 +108,7 @@ int write_audio(OggEncoderState *encoder, long samplespc, float **audio, FILE *f
       ogg_stream_packetin(&(encoder->os), op);
 
       /* write out pages (if any) */
-      while(!finished){
+      while(!finished) {
         int result=ogg_stream_pageout(&(encoder->os),&(encoder->og));
         if(result==0)break;
         fwrite(encoder->og.header,1,encoder->og.header_len,fp);
@@ -128,5 +128,13 @@ int write_audio(OggEncoderState *encoder, long samplespc, float **audio, FILE *f
   return -1;
 }
 
+void cleanup_encoder(OggEncoderState *encoder) {
+  ogg_stream_clear(&(encoder->os));
+  vorbis_block_clear(&(encoder->vb));
+  vorbis_dsp_clear(&(encoder->vd));
+  vorbis_comment_clear(&(encoder->vc));
+  vorbis_info_clear(&(encoder->vi));
+  free(encoder);
+}
 
 
