@@ -83,6 +83,7 @@ int main (int argc, char *argv[]) {
       if (stretch->need_more_audio) {
         new_audio = get_audio_data(af, stretch->window_size);
         stretch_load_samples(stretch, new_audio);
+        audio_buffer_destroy(new_audio);
       }
       if (!stretch->need_more_audio) {
         output = stretch_run(stretch);

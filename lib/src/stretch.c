@@ -91,7 +91,6 @@ void stretch_load_samples(Stretch *s, AudioBuffer *new_audio) {
     s->need_more_audio = 0;
   }
 
-  audio_buffer_destroy(new_audio);
   return;
  error:
   debug("Error adding samples to stretch");
