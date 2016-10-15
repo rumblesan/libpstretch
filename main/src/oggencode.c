@@ -32,17 +32,18 @@ OggEncoderState *ogg_encoder_state(long channels, long samplerate, float quality
 
 void add_headers(OggEncoderState *encoder, FILE *fp) {
 
-  vorbis_comment *vc = malloc(sizeof(vorbis_comment));
-  check_mem(vc);
+  vorbis_comment vc;
 
-  vorbis_comment_init(vc);
-  vorbis_comment_add_tag(vc, "ENCODER", "encoder_example.c");
-  vorbis_comment_add_tag(vc, "ARTIST", "Rumblesan");
-  vorbis_comment_add_tag(vc, "TITLE", "More Efficient");
+  ogg_packet header;
+  ogg_packet header_comm;
+  ogg_packet header_code;
 
-  /* pick a random serial number; that way we can more likely build
-     chained streams just by concatenation */
-  ogg_stream_init(&(encoder->os),rand());
+  vorbis_comment_init(&vc);
+  vorbis_comment_add_tag(&vc, "ENCODER", "encoder_example.c");
+  vorbis_comment_add_tag(&vc, "ARTIST", "Rumblesan");
+  vorbis_comment_add_tag(&vc, "TITLE", "More Efficient");
+
+  ogg_stream_init(&(encoder->os), rand());
 
   /* Vorbis streams begin with three headers; the initial header (with
      most of the codec setup parameters) which is mandated by the Ogg
@@ -51,39 +52,20 @@ void add_headers(OggEncoderState *encoder, FILE *fp) {
      make the headers, then pass them to libvorbis one at a time;
      libvorbis handles the additional Ogg bitstream constraints */
 
-  {
-    ogg_packet header;
-    ogg_packet header_comm;
-    ogg_packet header_code;
+  vorbis_analysis_headerout(&(encoder->vd), &vc, &header, &header_comm, &header_code);
 
-    vorbis_analysis_headerout(&(encoder->vd), vc,&header,&header_comm,&header_code);
+  ogg_stream_packetin(&(encoder->os), &header);
+  ogg_stream_packetin(&(encoder->os), &header_comm);
+  ogg_stream_packetin(&(encoder->os), &header_code);
 
-    ogg_stream_packetin(&(encoder->os),&header); /* automatically placed in its own page */
-    ogg_stream_packetin(&(encoder->os),&header_comm);
-    ogg_stream_packetin(&(encoder->os),&header_code);
-
-    /* This ensures the actual
-     * audio data will start on a new page, as per spec
-     */
-    while(1) {
-      ogg_page *og = malloc(sizeof(ogg_page));
-      check_mem(og);
-      int result = ogg_stream_flush(&(encoder->os), og);
-      if(result == 0) {
-        free(og);
-        break;
-      }
-      fwrite(og->header,1,og->header_len,fp);
-      fwrite(og->body,1,og->body_len,fp);
-      free(og);
-    }
-
+  ogg_page output_page;
+  while(1) {
+    int result = ogg_stream_flush(&(encoder->os), &output_page);
+    if(result == 0) break;
+    fwrite(output_page.header, 1, output_page.header_len, fp);
+    fwrite(output_page.body, 1, output_page.body_len, fp);
   }
-  vorbis_comment_clear(vc);
-  free(vc);
-  return;
- error:
-  log_err("Could not add headers");
+
   return;
 }
 
