@@ -19,7 +19,6 @@ Stretch *stretch_create(int channels, int window_size, float stretch) {
   check(s->fft, "Could not create FFT");
 
   s->need_more_audio = 1;
-  s->finished = 0;
   s->input_offset    = 0.0;
   /*
     create buffers

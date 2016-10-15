@@ -80,11 +80,10 @@ int main (int argc, char *argv[]) {
     add_headers(encoder, outfile);
 
     int oggfinished = 0;
-    while (!(stretch->finished && stretch->need_more_audio && !oggfinished)) {
+    while (!(af->finished && stretch->need_more_audio && !oggfinished)) {
       if (stretch->need_more_audio) {
         new_audio = get_audio_data(af, stretch->window_size);
         stretch_load_samples(stretch, new_audio);
-        if (af->finished) stretch->finished = 1;
       }
       if (!stretch->need_more_audio) {
         output = stretch_run(stretch);

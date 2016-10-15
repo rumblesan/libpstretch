@@ -10,7 +10,6 @@ typedef struct Stretch {
   int channels;
   float speed;
 
-  int finished;
   int need_more_audio;
   float input_offset;
 
