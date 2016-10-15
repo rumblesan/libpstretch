@@ -70,22 +70,16 @@ void add_headers(OggEncoderState *encoder, FILE *fp) {
   return;
 }
 
-int add_audio(OggEncoderState *encoder, long samplespc, float **audio) {
+int add_audio(OggEncoderState *encoder, long channels, long samplespc, float **audio) {
   if (samplespc == 0) {
     return vorbis_analysis_wrote(&(encoder->vd), 0);
+  } else {
+    float **buffer = vorbis_analysis_buffer(&(encoder->vd), READ);
+    for (int c = 0; c < channels; c += 1) {
+      memcpy(buffer[c], audio[c], samplespc * sizeof(float));
+    }
+    return vorbis_analysis_wrote(&(encoder->vd), samplespc);
   }
-  float **buffer=vorbis_analysis_buffer(&(encoder->vd),READ);
-
-  for (long t = 0; t < samplespc; t+= 1) {
-    buffer[0][t] = audio[0][t];
-    buffer[1][t] = audio[1][t];
-  }
-  free(audio[0]);
-  free(audio[1]);
-  free(audio);
-
-  /* tell the library how much we actually submitted */
-  return vorbis_analysis_wrote(&(encoder->vd), samplespc);
 }
 
 int write_audio(OggEncoderState *encoder, FILE *fp) {

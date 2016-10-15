@@ -85,13 +85,14 @@ int main (int argc, char *argv[]) {
       }
       if (!stretch->need_more_audio) {
         output = stretch_run(stretch);
-        add_audio(encoder, output->size, output->buffers);
+        add_audio(encoder, af->info.channels, output->size, output->buffers);
+        audio_buffer_destroy(output);
         write_audio(encoder, outfile);
       }
     }
 
     int oggfinished = 0;
-    add_audio(encoder, 0, NULL);
+    add_audio(encoder, af->info.channels, 0, NULL);
     while (!oggfinished) {
       oggfinished = write_audio(encoder, outfile);
     }
