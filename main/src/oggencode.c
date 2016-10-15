@@ -71,6 +71,9 @@ void add_headers(OggEncoderState *encoder, FILE *fp) {
 }
 
 int add_audio(OggEncoderState *encoder, long samplespc, float **audio) {
+  if (samplespc == 0) {
+    return vorbis_analysis_wrote(&(encoder->vd), 0);
+  }
   float **buffer=vorbis_analysis_buffer(&(encoder->vd),READ);
 
   for (long t = 0; t < samplespc; t+= 1) {
@@ -93,7 +96,6 @@ int write_audio(OggEncoderState *encoder, FILE *fp) {
      block for encoding now */
 
   while(vorbis_analysis_blockout(&(encoder->vd), &(encoder->vb)) == 1){
-
     /* analysis, assume we want to use bitrate management */
     vorbis_analysis(&(encoder->vb),NULL);
     vorbis_bitrate_addblock(&(encoder->vb));
