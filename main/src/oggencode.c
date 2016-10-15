@@ -99,10 +99,13 @@ int write_audio(OggEncoderState *encoder, long samplespc, float **audio, FILE *f
     vorbis_analysis(&(encoder->vb),NULL);
     vorbis_bitrate_addblock(&(encoder->vb));
 
-    while(vorbis_bitrate_flushpacket(&(encoder->vd),&(encoder->op))){
+    ogg_packet *op = malloc(sizeof(ogg_packet));
+    check_mem(op);
+
+    while(vorbis_bitrate_flushpacket(&(encoder->vd), op)) {
 
       /* weld the packet into the bitstream */
-      ogg_stream_packetin(&(encoder->os),&(encoder->op));
+      ogg_stream_packetin(&(encoder->os), op);
 
       /* write out pages (if any) */
       while(!finished){
@@ -117,8 +120,12 @@ int write_audio(OggEncoderState *encoder, long samplespc, float **audio, FILE *f
         if(ogg_page_eos(&(encoder->og)))finished=1;
       }
     }
+    free(op);
+    op = NULL;
   }
   return finished;
+ error:
+  return -1;
 }
 
 
