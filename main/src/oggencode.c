@@ -96,42 +96,33 @@ int write_audio(OggEncoderState *encoder, long samplespc, float **audio, FILE *f
     vorbis_analysis(&(encoder->vb),NULL);
     vorbis_bitrate_addblock(&(encoder->vb));
 
-    ogg_packet *op = malloc(sizeof(ogg_packet));
-    check_mem(op);
+    ogg_packet new_packet;
 
-    while(vorbis_bitrate_flushpacket(&(encoder->vd), op)) {
+    while(vorbis_bitrate_flushpacket(&(encoder->vd), &new_packet)) {
 
       /* weld the packet into the bitstream */
-      ogg_stream_packetin(&(encoder->os), op);
+      ogg_stream_packetin(&(encoder->os), &new_packet);
 
       /* write out pages (if any) */
-      while(!finished) {
-        ogg_page *og = malloc(sizeof(ogg_page));
-        check_mem(og);
-        int result = ogg_stream_pageout(&(encoder->os), og);
+      ogg_page new_page;
 
-        if(result == 0) {
-          free(og);
-          break;
-        }
-        fwrite(og->header, 1, og->header_len, fp);
-        fwrite(og->body, 1, og->body_len, fp);
+      while(!finished) {
+        int result = ogg_stream_pageout(&(encoder->os), &new_page);
+
+        if(result == 0) break;
+        fwrite(new_page.header, 1, new_page.header_len, fp);
+        fwrite(new_page.body, 1, new_page.body_len, fp);
 
         /* this could be set above, but for illustrative purposes, I do
            it here (to show that vorbis does know where the stream ends) */
 
-        if(ogg_page_eos(og)) finished = 1;
-        free(og);
+        if(ogg_page_eos(&new_page)) finished = 1;
       }
     }
 
-    free(op);
-    op = NULL;
   }
 
   return finished;
- error:
-  return -1;
 }
 
 void cleanup_encoder(OggEncoderState *encoder) {
