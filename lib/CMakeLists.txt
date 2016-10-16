@@ -24,6 +24,7 @@ include_directories("${BCLIB_INCLUDE_DIRS}")
 target_link_libraries(pstretch bclib)
 
 target_link_libraries(pstretch fftw3f)
+target_link_libraries(pstretch m)
 
 install(TARGETS pstretch
     DESTINATION lib
