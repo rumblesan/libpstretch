@@ -19,10 +19,7 @@ add_library(pstretch STATIC ${SOURCES})
 set_target_properties(pstretch PROPERTIES
     PUBLIC_HEADER "${HEADERS}")
 
-find_package(BCLib REQUIRED)
-include_directories("${BCLIB_INCLUDE_DIRS}")
 target_link_libraries(pstretch bclib)
-
 target_link_libraries(pstretch fftw3f)
 target_link_libraries(pstretch m)
 

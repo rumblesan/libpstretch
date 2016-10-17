@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include "audiobuffer.h"
 
-#include "bclib/dbg.h"
+#include <bclib/dbg.h>
 
 AudioBuffer *audio_buffer_create(int channels, int size) {
   AudioBuffer *audio = malloc(sizeof(AudioBuffer));

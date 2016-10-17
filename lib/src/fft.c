@@ -4,7 +4,7 @@
 #include "fft.h"
 #include "audiobuffer.h"
 
-#include "bclib/dbg.h"
+#include <bclib/dbg.h>
 
 FFT *fft_create (int window_size) {
 

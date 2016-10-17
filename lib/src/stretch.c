@@ -5,7 +5,7 @@
 #include "audiobuffer.h"
 #include "fft.h"
 
-#include "bclib/dbg.h"
+#include <bclib/dbg.h>
 
 Stretch *stretch_create(int channels, int window_size, float stretch) {
 

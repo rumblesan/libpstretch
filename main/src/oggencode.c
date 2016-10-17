@@ -8,7 +8,7 @@
 
 #include "oggencode.h"
 
-#include "bclib/dbg.h"
+#include <bclib/dbg.h>
 
 
 OggEncoderState *ogg_encoder_state(long channels, long samplerate, float quality) {
