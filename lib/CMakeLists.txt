@@ -14,20 +14,18 @@ set(SOURCES
   "src/stretch.c"
   )
 
-add_library(pstretch STATIC ${SOURCES})
+add_library(pstretch ${HEADERS} ${SOURCES})
 set_property(TARGET pstretch PROPERTY C_STANDARD 99)
 
-set_target_properties(pstretch PROPERTIES
-    PUBLIC_HEADER "${HEADERS}")
+target_include_directories(pstretch
+  PUBLIC include
+  PRIVATE src)
 
 target_link_libraries(pstretch bclib)
 target_link_libraries(pstretch fftw3f)
 target_link_libraries(pstretch m)
 
-install(TARGETS pstretch
-    DESTINATION lib
-    EXPORT LibPStretchTargets
-    LIBRARY DESTINATION "${INSTALL_LIB_DIR}" COMPONENT shlib
-    PUBLIC_HEADER DESTINATION "${INSTALL_INCLUDE_DIR}/pstretch"
-    COMPONENT dev
-    )
+install(TARGETS pstretch EXPORT LibPStretchTargets
+    ARCHIVE DESTINATION lib
+    LIBRARY DESTINATION lib)
+install(DIRECTORY include/ DESTINATION include/pstretch)
