@@ -15,6 +15,7 @@ set(SOURCES
   )
 
 add_library(pstretch STATIC ${SOURCES})
+set_property(TARGET pstretch PROPERTY C_STANDARD 99)
 
 set_target_properties(pstretch PROPERTIES
     PUBLIC_HEADER "${HEADERS}")
