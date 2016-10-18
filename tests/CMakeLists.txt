@@ -4,6 +4,7 @@ set(TEST_SOURCES
     "src/test_audiobuffer.c"
     "src/test_stretch.c"
     "src/test_fft.c"
+    "src/test_full_algorithm.c"
     )
 
 foreach(TEST_FILE ${TEST_SOURCES})
