@@ -156,6 +156,7 @@ void fft_cleanup (FFT *fft) {
   fftwf_free(fft->data);
   fftwf_free(fft->freq);
 
+  fftwf_cleanup();
   free(fft);
   return;
  error:
