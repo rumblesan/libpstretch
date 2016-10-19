@@ -102,7 +102,7 @@ void fft_samp_to_freq(FFT *fft) {
 
   for (i = 0; i < fft->window_size/2; i++ ) {
     float c = fft->data[i];
-    float s = fft->data[fft->window_size-i];
+    float s = fft->data[(fft->window_size - 1) - i];
     fft->freq[i] = sqrt(c*c+s*s);
   }
   fft->freq[0] = 0.0;
@@ -121,7 +121,7 @@ void fft_pauls_algo(FFT *fft) {
     unsigned int rand = (fft->rand_seed>>16)&0x7fff;
     float phase = rand * inv_2p15_2pi;
     fft->data[i] = fft->freq[i]*cos(phase);
-    fft->data[fft->window_size-i] = fft->freq[i]*sin(phase);
+    fft->data[(fft->window_size - 1) - i] = fft->freq[i]*sin(phase);
   }
 
   fft->data[0] = 0.0;
