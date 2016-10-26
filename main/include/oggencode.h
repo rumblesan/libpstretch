@@ -1,10 +1,11 @@
 #ifndef LIBPSTRETCH_OGG_ENCODER_H
 #define LIBPSTRETCH_OGG_ENCODER_H
 
+#include <vorbis/vorbisenc.h>
+
 #include <stdlib.h>
 #include <stdio.h>
-
-#include <vorbis/vorbisenc.h>
+#include "filechunk.h"
 
 typedef struct OggEncoderState {
 
@@ -26,7 +27,7 @@ void cleanup_encoder(OggEncoderState *encoder);
 
 void set_headers(OggEncoderState *encoder);
 
-void write_headers(OggEncoderState *encoder, FILE *fp);
+void write_headers(OggEncoderState *encoder, FileChunk *chunk);
 
 int add_audio(OggEncoderState *encoder, long channels, long length, float **audio);
 

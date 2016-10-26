@@ -3,7 +3,7 @@
 #include <unistd.h>
 #include "wavstretch.h"
 #include "audiofile.h"
-#include "oggencode.h"
+#include "ogg_encoder.h"
 #include "pstretch.h"
 
 void usage(int exitval) {
@@ -76,9 +76,16 @@ int main (int argc, char *argv[]) {
     AudioBuffer *output = NULL;
 
     OggEncoderState *encoder = ogg_encoder_state(2, 44100, 0.5);
-    set_headers(encoder);
-    write_headers(encoder, outfile);
 
+    TrackInfo *info = track_info_create(bfromcstr("Artist"), bfromcstr("Title"));
+
+    set_metadata(encoder, info);
+    FileChunk *hfc = file_chunk_create();
+    write_headers(encoder, hfc);
+    fwrite(hfc->data, hfc->length, sizeof(unsigned char), outfile);
+    file_chunk_destroy(hfc);
+
+    FileChunk *next_chunk = NULL;
     while (!(af->finished && stretch->need_more_audio)) {
       if (stretch->need_more_audio) {
         new_audio = get_audio_data(af, stretch->window_size);
@@ -87,21 +94,30 @@ int main (int argc, char *argv[]) {
       }
       if (!stretch->need_more_audio) {
         output = stretch_run(stretch);
-        add_audio(encoder, af->info.channels, output->size, output->buffers);
+        add_audio(encoder, output);
         audio_buffer_destroy(output);
-        write_audio(encoder, outfile);
+        next_chunk = file_chunk_create();
+        write_audio(encoder, next_chunk);
+        fwrite(next_chunk->data, next_chunk->length, sizeof(unsigned char), outfile);
+        file_chunk_destroy(next_chunk);
+        next_chunk = NULL;
       }
     }
 
     int oggfinished = 0;
-    add_audio(encoder, af->info.channels, 0, NULL);
+    file_finished(encoder);
     while (!oggfinished) {
-      oggfinished = write_audio(encoder, outfile);
+      next_chunk = file_chunk_create();
+      oggfinished = write_audio(encoder, next_chunk);
+      fwrite(next_chunk->data, next_chunk->length, sizeof(unsigned char), outfile);
+      file_chunk_destroy(next_chunk);
+      next_chunk = NULL;
     }
 
     stretch_destroy(stretch);
     cleanup_audio_file(af);
     cleanup_encoder(encoder);
+    fclose(outfile);
 
     return 0;
 }
