@@ -12,8 +12,12 @@ AudioBuffer *audio_buffer_create(int channels, int size) {
   audio->buffers = malloc(sizeof(float*) * channels);
   check_mem(audio->buffers);
   for (int c = 0; c < channels; c++) {
-    audio->buffers[c] = calloc(size, sizeof(float*));
-    check_mem(audio->buffers[c]);
+    if (size > 0) {
+      audio->buffers[c] = calloc(size, sizeof(float*));
+      check_mem(audio->buffers[c]);
+    } else {
+      audio->buffers[c] = NULL;
+    }
   }
 
   return audio;
